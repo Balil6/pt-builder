@@ -139,10 +139,33 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
   .week-bar{gap:3px}
   .week-btn{padding:4px 9px;font-size:11px}
 }
+
+/* ── PASSWORD GATE ── */
+.gate{position:fixed;inset:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:9999}
+.gate-box{background:#111;border:1px solid #222;border-radius:var(--radius-xl);padding:40px;width:320px;text-align:center}
+.gate-logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--white);margin-bottom:8px}
+.gate-sub{font-size:13px;color:var(--grey-400);margin-bottom:28px}
+.gate-input{width:100%;padding:10px 14px;background:#1a1a1a;border:1px solid #333;border-radius:var(--radius);color:var(--white);font-size:14px;font-family:'Inter',sans-serif;margin-bottom:12px;text-align:center;letter-spacing:0.05em}
+.gate-input:focus{outline:none;border-color:#555}
+.gate-btn{width:100%;padding:10px;background:var(--white);color:var(--black);border:none;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:opacity 0.15s}
+.gate-btn:hover{opacity:0.88}
+.gate-error{font-size:12px;color:#e05555;margin-top:8px;min-height:18px}
 </style>
 </head>
 <body>
-<div class="app">
+<!-- PASSWORD GATE -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">PT Builder</div>
+    <div class="gate-sub">Enter your password to continue</div>
+    <input class="gate-input" id="gateInput" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="gate-btn" onclick="checkPass()">Enter</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<div class="app" id="mainApp" style="display:none">
+
 
 <div class="topbar">
   <div class="topbar-brand">PT Builder <span>by Will</span></div>
@@ -165,8 +188,8 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
     <div class="week-bar" id="weekBar"></div>
     <div class="days-grid" id="daysGrid"></div>
     <div class="bottom-bar">
-      <button class="btn primary" onclick="exportWeek()">Export week</button>
-      <button class="btn primary" onclick="exportFull()">Export full program</button>
+      <button class="btn primary" onclick="exportWeekPDF()">Export week PDF</button>
+      <button class="btn" onclick="exportFull()">Export full program (text)</button>
       <button class="btn" onclick="copyWeekToAll()">Copy Week 1 to all weeks</button>
       <button class="btn" onclick="saveProgram()">Save</button>
       <button class="btn" onclick="loadProgram()">Load</button>
@@ -716,6 +739,129 @@ function filterDB(){
 // ── init ──────────────────────────────────────────────────────────────────────
 renderWeekBar();
 renderDays();
+
+// ── PASSWORD GATE ──────────────────────────────────────────────────────────
+const PASS = 'PTBalil123';
+function checkPass(){
+  const val = document.getElementById('gateInput').value;
+  if(val === PASS){
+    sessionStorage.setItem('pt_auth','1');
+    document.getElementById('gate').style.display='none';
+    document.getElementById('mainApp').style.display='flex';
+    document.getElementById('mainApp').style.flexDirection='column';
+    document.getElementById('mainApp').style.minHeight='100vh';
+  } else {
+    document.getElementById('gateError').textContent='Incorrect password. Try again.';
+    document.getElementById('gateInput').value='';
+    document.getElementById('gateInput').focus();
+  }
+}
+// Check session on load
+if(sessionStorage.getItem('pt_auth')==='1'){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('mainApp').style.display='flex';
+  document.getElementById('mainApp').style.flexDirection='column';
+  document.getElementById('mainApp').style.minHeight='100vh';
+}
+
+// ── PDF EXPORT ─────────────────────────────────────────────────────────────
+function exportWeekPDF(){
+  const client = document.getElementById('clientName').value || 'Client';
+  const prog   = document.getElementById('progName').value || 'Program';
+  const data   = program.weeks[currentWeek];
+  if(!data){ toast('No exercises in this week yet.'); return; }
+
+  let html = `
+  <html><head><meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;color:#0a0a0a;background:#fff;padding:32px;font-size:12px}
+    .cover-name{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px}
+    .cover-sub{font-size:13px;color:#6b6b62;margin-bottom:20px}
+    .meta-bar{display:flex;gap:0;border:1px solid #e2e2de;border-radius:8px;overflow:hidden;margin-bottom:28px}
+    .meta-item{flex:1;padding:10px 14px;border-right:1px solid #e2e2de}
+    .meta-item:last-child{border-right:none}
+    .meta-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9a9a92;margin-bottom:2px}
+    .meta-value{font-size:12px;font-weight:500}
+    .divider{border:none;border-top:1px solid #e2e2de;margin:20px 0}
+    .day-header{padding:8px 12px;border-radius:6px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;margin-top:18px}
+    .day-0{background:#e8eaf6;color:#1a1a2e}
+    .day-1{background:#e3f2fd;color:#0f3460}
+    .day-2{background:#e8eaf6;color:#16213e}
+    .day-3{background:#ede7f6;color:#3a1a6a}
+    .sec-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:0.04em;margin-bottom:6px;margin-top:10px}
+    .sec-warmup{background:#e8eaf6;color:#1a1a2e}
+    .sec-main{background:#ddeeff;color:#0f3460}
+    .sec-cardio{background:#f3e5f5;color:#4a1a6a}
+    table{width:100%;border-collapse:collapse;margin-bottom:4px}
+    th{background:#f0f0ee;padding:6px 10px;text-align:left;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b6b62;border-bottom:1px solid #e2e2de}
+    td{padding:8px 10px;border-bottom:1px solid #f0f0ee;font-size:11px;vertical-align:top}
+    tr:nth-child(even) td{background:#fafaf8}
+    .ex-name{font-weight:500}
+    .notes-text{color:#6b6b62;font-style:italic}
+    .po-box{background:#f8f8f7;border-left:3px solid #0a0a0a;padding:14px 16px;margin-top:28px;border-radius:0 6px 6px 0}
+    .po-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+    .po-row{display:flex;gap:10px;margin-bottom:6px}
+    .po-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+    .po-text{font-size:11px;padding-top:2px}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid #e2e2de;display:flex;justify-content:space-between;font-size:10px;color:#9a9a92}
+  </style></head><body>`;
+
+  html += `<div class="cover-name">${client}</div>`;
+  html += `<div class="cover-sub">${prog} — Week ${currentWeek}</div>`;
+
+  const startDate = document.getElementById('startDate').value;
+  const coachNotes = document.getElementById('coachNotes').value;
+  html += `<div class="meta-bar">
+    <div class="meta-item"><div class="meta-label">Week</div><div class="meta-value">Week ${currentWeek} of 12</div></div>
+    <div class="meta-item"><div class="meta-label">Program</div><div class="meta-value">${prog}</div></div>
+    ${startDate ? `<div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">${startDate}</div></div>` : ''}
+    ${coachNotes ? `<div class="meta-item"><div class="meta-label">Coach Notes</div><div class="meta-value">${coachNotes}</div></div>` : ''}
+  </div><hr class="divider">`;
+
+  const dayClasses = ['day-0','day-1','day-2','day-3'];
+  DAYS.forEach((day,di) => {
+    let dayHtml = '';
+    SECTIONS.forEach(s => {
+      const slots = (data[di]||{})[s.key]||[];
+      const filled = slots.filter(r=>r.ex);
+      if(!filled.length) return;
+      dayHtml += `<div class="sec-label sec-${s.key}">${s.icon} ${s.label}</div>`;
+      dayHtml += `<table><thead><tr><th style="width:36%">Exercise</th><th style="width:12%">Sets</th><th style="width:14%">Reps</th><th>Notes / Cue</th></tr></thead><tbody>`;
+      filled.forEach(r => {
+        dayHtml += `<tr>
+          <td><span class="ex-name">${r.ex}</span></td>
+          <td>${r.sets||'—'}</td>
+          <td>${r.reps||'—'}</td>
+          <td class="notes-text">${r.notes||''}</td>
+        </tr>`;
+      });
+      dayHtml += `</tbody></table>`;
+    });
+    if(dayHtml){
+      html += `<div class="day-header ${dayClasses[di]}">Day ${di+1} — ${day}</div>${dayHtml}`;
+    }
+  });
+
+  html += `<div class="po-box">
+    <div class="po-title">Progressive Overload — How This Program Works</div>
+    <div class="po-row"><div class="po-num" style="background:#1a3a6b">1</div><div class="po-text"><strong>Add Weight</strong> — same reps, heavier bar</div></div>
+    <div class="po-row"><div class="po-num" style="background:#1a4a2a">2</div><div class="po-text"><strong>Add Reps</strong> — same weight, one or two extra reps</div></div>
+    <div class="po-row"><div class="po-num" style="background:#5a3a00">3</div><div class="po-text"><strong>Add Exercises</strong> — same weight and reps on each lift, more exercises in the session</div></div>
+    <div style="margin-top:10px;font-size:11px;font-weight:500">The only rule: something must go up every week. Weight or reps. Pick one.</div>
+  </div>`;
+
+  html += `<footer><span>Programmed by Will</span><span>${client} — Week ${currentWeek}</span><span>Hybrid Athlete Programme</span></footer>`;
+  html += '</body></html>';
+
+  const win = window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.onload = () => { win.print(); };
+}
+
 </script>
+</div>
 </body>
 </html>
