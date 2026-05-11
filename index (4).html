@@ -12,20 +12,26 @@
   --black:#0a0a0a;--white:#ffffff;--grey-50:#f8f8f7;--grey-100:#f0f0ee;
   --grey-200:#e2e2de;--grey-300:#c8c8c2;--grey-400:#9a9a92;--grey-500:#6b6b62;
   --grey-600:#4a4a44;--grey-900:#1a1a16;
-  --blue:#1a3a6b;--blue-light:#e8f0fb;--blue-mid:#c5d8f5;
+  --blue:#1a3a6b;--blue-light:#e8f0fb;
   --green:#1a4a2a;--green-light:#e8f5ec;
   --amber:#5a3a00;--amber-light:#fef3e2;
   --red:#5a1a1a;--red-light:#fde8e8;
-  --navy:#1a1a2e;--navy-light:#e8eaf6;
-  --teal:#0f3460;--teal-light:#e3f2fd;
   --radius:6px;--radius-lg:10px;--radius-xl:14px;
-  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
 }
 body{font-family:'Inter',sans-serif;background:var(--grey-50);color:var(--black);font-size:14px;line-height:1.5;min-height:100vh}
-h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 
-/* ── LAYOUT ── */
+.gate{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999}
+.gate-box{background:#111;border:1px solid #222;border-radius:var(--radius-xl);padding:40px;width:320px;text-align:center}
+.gate-logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px}
+.gate-sub{font-size:13px;color:#666;margin-bottom:28px}
+.gate-input{width:100%;padding:10px 14px;background:#1a1a1a;border:1px solid #333;border-radius:var(--radius);color:#fff;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:12px;text-align:center;letter-spacing:0.05em}
+.gate-input:focus{outline:none;border-color:#555}
+.gate-btn{width:100%;padding:10px;background:#fff;color:#000;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer}
+.gate-btn:hover{opacity:0.88}
+.gate-error{font-size:12px;color:#e05555;margin-top:8px;min-height:18px}
+
 .app{display:flex;flex-direction:column;min-height:100vh}
 .topbar{background:var(--black);color:var(--white);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
 .topbar-brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;letter-spacing:-0.02em}
@@ -34,35 +40,44 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .topbar-nav button{padding:6px 14px;border-radius:var(--radius);border:none;background:transparent;color:var(--grey-400);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
 .topbar-nav button:hover{color:var(--white);background:rgba(255,255,255,0.08)}
 .topbar-nav button.active{color:var(--white);background:rgba(255,255,255,0.12)}
-.content{flex:1;padding:24px;max-width:1100px;margin:0 auto;width:100%}
-
-/* ── VIEWS ── */
+.content{flex:1;padding:24px;max-width:1200px;margin:0 auto;width:100%}
 .view{display:none}.view.active{display:block}
 
-/* ── PROGRAM META ── */
-.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
-.meta-field label{font-size:11px;font-weight:500;color:var(--grey-500);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:4px}
-.meta-field input{width:100%;padding:8px 12px;border:1px solid var(--grey-200);border-radius:var(--radius);background:var(--white);font-size:13px;font-family:'Inter',sans-serif;color:var(--black);transition:border-color 0.15s}
-.meta-field input:focus{outline:none;border-color:var(--grey-400)}
+.setup-panel{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius-xl);padding:20px;margin-bottom:20px}
+.setup-title{font-size:13px;font-weight:600;margin-bottom:16px;color:var(--grey-600);text-transform:uppercase;letter-spacing:0.05em}
+.day-configs{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.day-config{background:var(--grey-50);border:1px solid var(--grey-200);border-radius:var(--radius-lg);padding:12px 16px}
+.day-config-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.day-config-header input{flex:1;min-width:140px;padding:6px 10px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:13px;font-weight:500;background:var(--white)}
+.day-config-header input:focus{outline:none;border-color:var(--grey-400)}
+.day-num-badge{background:var(--black);color:var(--white);font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;flex-shrink:0;font-family:'Space Grotesk',sans-serif}
+.sessions-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.session-config{display:flex;gap:6px;align-items:center;background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius);padding:6px 10px}
+.session-config select{border:none;background:transparent;font-size:12px;color:var(--black);padding:0;cursor:pointer;font-family:'Inter',sans-serif}
+.session-label{font-size:11px;color:var(--grey-500);font-weight:500}
+.add-session-btn,.remove-session-btn{padding:4px 8px;font-size:11px;border-radius:4px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500}
+.add-session-btn{border:1px dashed var(--grey-300);background:transparent;color:var(--grey-500)}
+.add-session-btn:hover{border-color:var(--grey-400);color:var(--black)}
+.remove-session-btn{border:none;background:transparent;color:var(--grey-300);font-size:14px;padding:2px 6px}
+.remove-session-btn:hover{color:var(--red)}
 
-/* ── WEEK TABS ── */
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px}
+.meta-field label{font-size:11px;font-weight:500;color:var(--grey-500);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:4px}
+.meta-field input,.meta-field select{width:100%;padding:8px 12px;border:1px solid var(--grey-200);border-radius:var(--radius);background:var(--white);font-size:13px;font-family:'Inter',sans-serif;color:var(--black)}
+.meta-field input:focus,.meta-field select:focus{outline:none;border-color:var(--grey-400)}
+
 .week-bar{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--grey-200)}
 .week-btn{padding:5px 12px;border-radius:var(--radius);border:1px solid var(--grey-200);background:var(--white);color:var(--grey-500);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
 .week-btn:hover{border-color:var(--grey-300);color:var(--black)}
 .week-btn.active{background:var(--black);color:var(--white);border-color:var(--black)}
 .week-btn.has-content{border-color:var(--grey-300);color:var(--grey-600)}
 
-/* ── DAY BLOCKS ── */
 .days-grid{display:flex;flex-direction:column;gap:10px}
 .day-block{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow)}
-.day-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;transition:background 0.15s}
+.day-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none}
 .day-header:hover{background:var(--grey-50)}
 .day-header-left{display:flex;align-items:center;gap:10px}
-.day-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'Space Grotesk',sans-serif}
-.day-0 .day-num{background:var(--navy-light);color:var(--navy)}
-.day-1 .day-num{background:var(--teal-light);color:var(--teal)}
-.day-2 .day-num{background:var(--navy-light);color:#16213e}
-.day-3 .day-num{background:#ede7f6;color:#3a1a6a}
+.day-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:'Space Grotesk',sans-serif;background:var(--grey-100);color:var(--grey-600)}
 .day-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600}
 .day-count{font-size:11px;color:var(--grey-400);margin-left:4px}
 .day-toggle{color:var(--grey-400);font-size:12px;transition:transform 0.2s}
@@ -70,90 +85,81 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .day-body{padding:0 16px 16px;display:none}
 .day-body.open{display:block}
 
-/* ── SECTIONS ── */
-.section-block{margin-top:14px}
-.section-label{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
-.sec-warmup{background:var(--navy-light);color:var(--navy)}
-.sec-main{background:var(--teal-light);color:var(--teal)}
-.sec-cardio{background:#f3e5f5;color:#4a1a6a}
+.session-block{margin-top:12px;border:1px solid var(--grey-200);border-radius:var(--radius-lg);overflow:hidden}
+.session-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--grey-50);border-bottom:1px solid var(--grey-200)}
+.session-time-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;letter-spacing:0.06em;text-transform:uppercase}
+.time-am{background:#e3f2fd;color:#0f3460}
+.time-pm{background:#ede7f6;color:#3a1a6a}
+.session-type-label{font-size:12px;font-weight:500;color:var(--grey-600)}
+.session-body{padding:12px 14px}
 
-/* ── EXERCISE ROWS ── */
+.section-block{margin-bottom:10px}
+.section-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px;text-transform:uppercase}
+.sec-warmup{background:#e8eaf6;color:#1a1a2e}
+.sec-main{background:#e3f2fd;color:#0f3460}
+.sec-cardio{background:#f3e5f5;color:#4a1a6a}
+.sec-run{background:#e8f5e9;color:#1a4a2a}
+.sec-conditioning{background:#fef3e2;color:#5a3a00}
+.sec-mobility{background:#fce4ec;color:#5a1a1a}
+
+.row-headers{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;padding:0 0 3px}
+.rh{font-size:10px;color:var(--grey-400);font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
 .ex-rows{display:flex;flex-direction:column;gap:5px}
 .ex-row{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;align-items:center}
 .ex-row select,.ex-row input{padding:6px 10px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:12px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black);width:100%}
 .ex-row select:focus,.ex-row input:focus{outline:none;border-color:var(--grey-400)}
-.ex-row select.equip-sel{background:var(--grey-50);font-weight:500}
-.ex-row select.ex-sel{border-color:var(--grey-200)}
-.ex-row select.ex-sel.filled{border-color:var(--grey-300);background:#fafaf8}
-.ex-row .sets-in{text-align:center}
-.ex-row .reps-in{text-align:center}
-.ex-row .notes-in{color:var(--grey-600);font-style:italic}
-.rm-btn{width:28px;height:28px;border:none;background:transparent;color:var(--grey-300);cursor:pointer;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s;flex-shrink:0}
+.ex-row .equip-sel{background:var(--grey-50);font-weight:500}
+.ex-row .ex-sel.filled{border-color:var(--grey-300)}
+.rm-btn{width:28px;height:28px;border:none;background:transparent;color:var(--grey-300);cursor:pointer;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s}
 .rm-btn:hover{color:var(--red);background:var(--red-light)}
 .add-row-btn{margin-top:6px;padding:5px 12px;border:1px dashed var(--grey-300);border-radius:var(--radius);background:transparent;color:var(--grey-500);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
 .add-row-btn:hover{border-color:var(--grey-400);color:var(--black);background:var(--grey-50)}
 
-/* ── COL HEADERS ── */
-.ex-col-headers{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;padding:0 0 4px;margin-bottom:0}
-.col-hdr{font-size:10px;font-weight:500;color:var(--grey-400);text-transform:uppercase;letter-spacing:0.05em}
-
-/* ── BOTTOM BAR ── */
 .bottom-bar{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--grey-200)}
 .btn{padding:8px 16px;border-radius:var(--radius);border:1px solid var(--grey-200);background:var(--white);color:var(--black);font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
 .btn:hover{background:var(--grey-50);border-color:var(--grey-300)}
 .btn.primary{background:var(--black);color:var(--white);border-color:var(--black)}
-.btn.primary:hover{background:var(--grey-900)}
+.btn.primary:hover{opacity:0.85}
 .toast{padding:8px 14px;background:var(--grey-900);color:var(--white);border-radius:var(--radius);font-size:12px;display:none;margin-top:8px}
 
-/* ── DATABASE ── */
 .db-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
 .db-filters select,.db-filters input{padding:8px 12px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:13px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black);width:100%}
-.db-filters select:focus,.db-filters input:focus{outline:none;border-color:var(--grey-400)}
 .db-count{font-size:12px;color:var(--grey-400);margin-bottom:12px}
 .db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
 .db-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius-lg);padding:12px 14px;cursor:pointer;transition:all 0.15s}
-.db-card:hover{border-color:var(--grey-300);box-shadow:var(--shadow)}
+.db-card:hover{border-color:var(--grey-300)}
 .db-card.expanded .db-cue{display:block}
 .db-name{font-size:13px;font-weight:600;margin-bottom:4px}
 .db-meta{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0}
 .db-cue{font-size:11px;color:var(--grey-500);font-style:italic;margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--grey-100);display:none}
-.db-tempo{font-size:10px;color:var(--grey-400);margin-top:4px}
 .badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500}
 .b-equip{background:var(--grey-100);color:var(--grey-600)}
 .b-beg{background:var(--green-light);color:var(--green)}
 .b-int{background:var(--amber-light);color:var(--amber)}
 .b-adv{background:var(--red-light);color:var(--red)}
 
-/* ── SECTION ROW HEADERS ── */
-.row-headers{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;padding:0 0 3px}
-.rh{font-size:10px;color:var(--grey-400);font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
 
-/* ── RESPONSIVE ── */
+.cardio-row{display:grid;grid-template-columns:minmax(110px,1.4fr) minmax(100px,1fr) 80px 80px minmax(90px,1fr) minmax(80px,1fr) 28px;gap:6px;align-items:center}
+.cardio-row select,.cardio-row input{padding:6px 10px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:12px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black);width:100%}
+.cardio-row select:focus,.cardio-row input:focus{outline:none;border-color:var(--grey-400)}
+.cardio-row .activity-sel{background:#f3e5f5;font-weight:500;border-color:#d0b0d8}
+.cardio-row-headers{display:grid;grid-template-columns:minmax(110px,1.4fr) minmax(100px,1fr) 80px 80px minmax(90px,1fr) minmax(80px,1fr) 28px;gap:6px;padding:0 0 3px}
+@media(max-width:640px){
+  .cardio-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto}
+  .cardio-row-headers{display:none}
+}
+
 @media(max-width:640px){
   .content{padding:16px}
   .ex-row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
-  .ex-row .notes-in{grid-column:1/-1}
-  .ex-row .rm-btn{grid-column:2;justify-self:end}
   .row-headers{display:none}
   .topbar{padding:0 16px}
-  .week-bar{gap:3px}
   .week-btn{padding:4px 9px;font-size:11px}
 }
-
-/* ── PASSWORD GATE ── */
-.gate{position:fixed;inset:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:9999}
-.gate-box{background:#111;border:1px solid #222;border-radius:var(--radius-xl);padding:40px;width:320px;text-align:center}
-.gate-logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--white);margin-bottom:8px}
-.gate-sub{font-size:13px;color:var(--grey-400);margin-bottom:28px}
-.gate-input{width:100%;padding:10px 14px;background:#1a1a1a;border:1px solid #333;border-radius:var(--radius);color:var(--white);font-size:14px;font-family:'Inter',sans-serif;margin-bottom:12px;text-align:center;letter-spacing:0.05em}
-.gate-input:focus{outline:none;border-color:#555}
-.gate-btn{width:100%;padding:10px;background:var(--white);color:var(--black);border:none;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:opacity 0.15s}
-.gate-btn:hover{opacity:0.88}
-.gate-error{font-size:12px;color:#e05555;margin-top:8px;min-height:18px}
 </style>
 </head>
 <body>
-<!-- PASSWORD GATE -->
+
 <div class="gate" id="gate">
   <div class="gate-box">
     <div class="gate-logo">PT Builder</div>
@@ -164,9 +170,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
   </div>
 </div>
 
-<div class="app" id="mainApp" style="display:none">
-
-
+<div class="app" id="mainApp" style="display:none;flex-direction:column;min-height:100vh">
 <div class="topbar">
   <div class="topbar-brand">PT Builder <span>by Will</span></div>
   <div class="topbar-nav">
@@ -174,43 +178,75 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600}
     <button onclick="showView('database',this)">Exercise DB</button>
   </div>
 </div>
-
 <div class="content">
 
-  <!-- ── BUILDER VIEW ── -->
-  <div id="builder" class="view active">
-    <div class="meta-grid">
-      <div class="meta-field"><label>Client name</label><input id="clientName" placeholder="e.g. Alex Thompson"></div>
-      <div class="meta-field"><label>Program name</label><input id="progName" placeholder="e.g. 12-Week Hybrid"></div>
-      <div class="meta-field"><label>Start date</label><input id="startDate" type="date"></div>
-      <div class="meta-field"><label>Coach notes</label><input id="coachNotes" placeholder="Overall program notes..."></div>
+<div id="builder" class="view active">
+  <div class="meta-grid">
+    <div class="meta-field"><label>Client name</label><input id="clientName" placeholder="e.g. Alex Thompson"></div>
+    <div class="meta-field"><label>Program name</label><input id="progName" placeholder="e.g. 12-Week Hybrid"></div>
+    <div class="meta-field"><label>Start date</label><input id="startDate" type="date"></div>
+    <div class="meta-field"><label>Program length</label>
+      <select id="progLength" onchange="updateWeekBar()">
+        <option value="4">4 weeks</option>
+        <option value="6">6 weeks</option>
+        <option value="8">8 weeks</option>
+        <option value="10">10 weeks</option>
+        <option value="12" selected>12 weeks</option>
+        <option value="16">16 weeks</option>
+        <option value="20">20 weeks</option>
+        <option value="24">24 weeks</option>
+      </select>
     </div>
-    <div class="week-bar" id="weekBar"></div>
-    <div class="days-grid" id="daysGrid"></div>
-    <div class="bottom-bar">
-      <button class="btn primary" onclick="exportWeekPDF()">Export week PDF</button>
-      <button class="btn" onclick="exportFull()">Export full program (text)</button>
-      <button class="btn" onclick="copyWeekToAll()">Copy Week 1 to all weeks</button>
-      <button class="btn" onclick="saveProgram()">Save</button>
-      <button class="btn" onclick="loadProgram()">Load</button>
-    </div>
-    <div id="toast" class="toast"></div>
+    <div class="meta-field"><label>Coach notes</label><input id="coachNotes" placeholder="Overall notes..."></div>
   </div>
 
-  <!-- ── DATABASE VIEW ── -->
-  <div id="database" class="view">
-    <div class="db-filters">
-      <select id="fBP" onchange="filterDB()"><option value="">All body parts</option></select>
-      <select id="fEQ" onchange="filterDB()"><option value="">All equipment</option></select>
-      <select id="fDiff" onchange="filterDB()">
-        <option value="">All levels</option>
-        <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
-      </select>
-      <input id="fSearch" placeholder="Search exercises..." oninput="filterDB()">
+  <div class="setup-panel">
+    <div class="setup-title">Program Structure</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:11px;font-weight:500;color:var(--grey-500);text-transform:uppercase;letter-spacing:0.05em">Days per week</label>
+        <select id="numDays" onchange="updateDayConfigs()" style="padding:7px 10px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:13px;width:120px">
+          <option value="1">1 day</option>
+          <option value="2">2 days</option>
+          <option value="3">3 days</option>
+          <option value="4" selected>4 days</option>
+          <option value="5">5 days</option>
+          <option value="6">6 days</option>
+          <option value="7">7 days</option>
+        </select>
+      </div>
+      <div style="font-size:12px;color:var(--grey-400);padding-top:18px">Name each day and configure sessions. Click Apply when ready.</div>
     </div>
-    <div id="dbCount" class="db-count"></div>
-    <div id="dbGrid" class="db-grid"></div>
+    <div class="day-configs" id="dayConfigs"></div>
+    <button class="btn primary" onclick="applyStructure()" style="margin-top:8px">Apply structure</button>
   </div>
+
+  <div class="week-bar" id="weekBar"></div>
+  <div class="days-grid" id="daysGrid"></div>
+
+  <div class="bottom-bar">
+    <button class="btn primary" onclick="exportWeekPDF()">Export week PDF</button>
+    <button class="btn" onclick="exportFull()">Export full program</button>
+    <button class="btn" onclick="copyWeekToAll()">Copy Week 1 to all weeks</button>
+    <button class="btn" onclick="saveProgram()">Save</button>
+    <button class="btn" onclick="loadProgram()">Load</button>
+  </div>
+  <div id="toast" class="toast"></div>
+</div>
+
+<div id="database" class="view">
+  <div class="db-filters">
+    <select id="fBP" onchange="filterDB()"><option value="">All body parts</option></select>
+    <select id="fEQ" onchange="filterDB()"><option value="">All equipment</option></select>
+    <select id="fDiff" onchange="filterDB()">
+      <option value="">All levels</option>
+      <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+    </select>
+    <input id="fSearch" placeholder="Search exercises..." oninput="filterDB()">
+  </div>
+  <div id="dbCount" class="db-count"></div>
+  <div id="dbGrid" class="db-grid"></div>
+</div>
 
 </div>
 </div>
@@ -448,79 +484,152 @@ const EXERCISES = [
   ["Strides","Bodyweight","Full Body","—","Beginner","Warm Up","85-90% effort run over 60-100m. Gradual acceleration and deceleration.","4-6 strides"]
 ];
 
-const DAYS = ["Lower Body","Upper Body","Pull","Push"];
-const DAY_CLASSES = ["day-0","day-1","day-2","day-3"];
-const SECTIONS = [
-  {key:"warmup", label:"WARM UP", icon:"⚡"},
-  {key:"main",   label:"MAIN SESSION", icon:"●"},
-  {key:"cardio", label:"CARDIO / CONDITIONING", icon:"🏃"}
+const SESSION_TYPES = ['Weights','Cardio','Run','Conditioning','Mobility','Full Body','Lower Body','Upper Body','Push','Pull'];
+const SESSION_TIMES = ['AM','PM','Single'];
+const CARDIO_ACTIVITIES = ['Treadmill Run','Treadmill Walk','Assault Bike','Echo Bike','Row Erg','SkiErg','Stationary Bike','Spin Bike','Stair Climber','Elliptical','Sled Push','Sled Pull','Battle Ropes','Jump Rope','Kettlebell Swings','Box Jumps','Burpees','Swimming','Outdoor Run','Hill Run','Track Session','Prowler Sprint','Farmer Carry','Sandbag Work','Custom'];
+const CARDIO_TYPES = ['Steady State','Intervals','Threshold','Hill Reps','Tempo','AMRAP','Time Trial','Fartlek','Circuit','Custom'];
+const WEIGHT_PARTS = ["Push - Chest","Push - Shoulders","Push - Triceps","Pull - Back","Pull - Biceps","Lower - Quads","Lower - Glutes","Lower - Hamstrings","Lower - Calves","Lower - Adductors","Core","Olympic / Power","Full Body"];
+const CARDIO_PARTS = ["Cardio"];
+const WARMUP_PARTS = ["Warm Up"];
+
+function exFor(type){
+  const t=type.toLowerCase();
+  if(['run','cardio','conditioning'].includes(t)) return EXERCISES.filter(e=>CARDIO_PARTS.includes(e[5]));
+  if(t==='mobility') return EXERCISES.filter(e=>WARMUP_PARTS.includes(e[5]));
+  return EXERCISES.filter(e=>WEIGHT_PARTS.includes(e[5]));
+}
+function equipFor(type){return [...new Set(exFor(type).map(e=>e[1]))].sort()}
+function exForEquip(type,eq){return eq?exFor(type).filter(e=>e[1]===eq):exFor(type)}
+function getCue(name){const e=EXERCISES.find(e=>e[0]===name);return e?e[7]:''}
+
+let currentWeek=1;
+let program={meta:{},structure:[],weeks:{}};
+let currentStructure=[
+  {name:'Lower Body',sessions:[{time:'AM',type:'Weights'}]},
+  {name:'Upper Body',sessions:[{time:'AM',type:'Weights'}]},
+  {name:'Pull',sessions:[{time:'AM',type:'Weights'}]},
+  {name:'Push',sessions:[{time:'AM',type:'Weights'}]},
 ];
-const SEC_TYPES = {warmup:"warmup", main:"weights", cardio:"cardio"};
-const SEC_BODY_PARTS = {
-  warmup:   ["Warm Up"],
-  weights:  ["Push - Chest","Push - Shoulders","Push - Triceps","Pull - Back","Pull - Biceps","Lower - Quads","Lower - Glutes","Lower - Hamstrings","Lower - Calves","Lower - Adductors","Core","Olympic / Power"],
-  cardio:   ["Cardio"]
-};
+let openDays={};
 
-let currentWeek = 1;
-let program = { meta:{}, weeks:{} };
-let openDays = {0:true,1:false,2:false,3:false};
+const PASS='PTBalil123';
+function checkPass(){
+  if(document.getElementById('gateInput').value===PASS){
+    sessionStorage.setItem('pt_auth','1');
+    document.getElementById('gate').style.display='none';
+    document.getElementById('mainApp').style.display='flex';
+  }else{
+    document.getElementById('gateError').textContent='Incorrect password. Try again.';
+    document.getElementById('gateInput').value='';
+    document.getElementById('gateInput').focus();
+  }
+}
+if(sessionStorage.getItem('pt_auth')==='1'){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('mainApp').style.display='flex';
+}
 
-// ── helpers ──────────────────────────────────────────────────────────────────
-function exFor(type){ return EXERCISES.filter(e => SEC_BODY_PARTS[type].includes(e[5])); }
-function equipFor(type){ return [...new Set(exFor(type).map(e=>e[1]))].sort(); }
-function exForEquip(type,eq){ return eq ? exFor(type).filter(e=>e[1]===eq) : exFor(type); }
-function getCue(name){ const e=EXERCISES.find(e=>e[0]===name); return e?e[7]:''; }
+function showView(v,btn){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.topbar-nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById(v).classList.add('active');
+  btn.classList.add('active');
+  if(v==='database')initDB();
+}
+
+function updateDayConfigs(){
+  const n=parseInt(document.getElementById('numDays').value);
+  while(currentStructure.length<n) currentStructure.push({name:`Day ${currentStructure.length+1}`,sessions:[{time:'AM',type:'Weights'}]});
+  currentStructure=currentStructure.slice(0,n);
+  renderDayConfigs();
+}
+
+function renderDayConfigs(){
+  const n=parseInt(document.getElementById('numDays').value);
+  document.getElementById('dayConfigs').innerHTML=currentStructure.slice(0,n).map((day,di)=>`
+    <div class="day-config">
+      <div class="day-config-header">
+        <span class="day-num-badge">Day ${di+1}</span>
+        <input type="text" value="${day.name}" placeholder="Day name e.g. Lower Body" oninput="currentStructure[${di}].name=this.value">
+      </div>
+      <div class="sessions-row" id="sessions-${di}">
+        ${day.sessions.map((s,si)=>renderSessionConfig(di,si,s)).join('')}
+        <button class="add-session-btn" onclick="addSession(${di})">+ Add session</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSessionConfig(di,si,session){
+  const tOpts=SESSION_TIMES.map(t=>`<option ${t===session.time?'selected':''}>${t}</option>`).join('');
+  const tyOpts=SESSION_TYPES.map(t=>`<option ${t===session.type?'selected':''}>${t}</option>`).join('');
+  return `<div class="session-config">
+    <span class="session-label">Session ${si+1}</span>
+    <select onchange="currentStructure[${di}].sessions[${si}].time=this.value">${tOpts}</select>
+    <select onchange="currentStructure[${di}].sessions[${si}].type=this.value">${tyOpts}</select>
+    ${si>0?`<button class="remove-session-btn" onclick="removeSession(${di},${si})">x</button>`:''}
+  </div>`;
+}
+
+function addSession(di){currentStructure[di].sessions.push({time:'PM',type:'Weights'});renderDayConfigs()}
+function removeSession(di,si){currentStructure[di].sessions.splice(si,1);renderDayConfigs()}
+
+function applyStructure(){
+  program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,parseInt(document.getElementById('numDays').value))));
+  program.weeks={};
+  openDays={};
+  program.structure.forEach((_,i)=>openDays[i]=i===0);
+  renderWeekBar();renderDays();
+  toast('Structure applied. Week 1 is ready to fill.');
+}
+
+function updateWeekBar(){renderWeekBar()}
+
+function renderWeekBar(){
+  const len=parseInt(document.getElementById('progLength').value);
+  document.getElementById('weekBar').innerHTML=Array.from({length:len},(_,i)=>{
+    const w=i+1,has=!!program.weeks[w];
+    return `<button class="week-btn ${currentWeek===w?'active':''} ${has&&currentWeek!==w?'has-content':''}" onclick="switchWeek(${w})">W${w}</button>`;
+  }).join('');
+}
+
+function switchWeek(w){currentWeek=w;renderWeekBar();renderDays()}
+
 function getWeek(w){
+  const struct=program.structure.length?program.structure:currentStructure;
   if(!program.weeks[w]){
-    program.weeks[w] = {};
-    DAYS.forEach((_,di)=>{
+    program.weeks[w]={};
+    struct.forEach((day,di)=>{
       program.weeks[w][di]={};
-      SECTIONS.forEach(s=>{
-        const slots = s.key==='main' ? 8 : 4;
-        program.weeks[w][di][s.key] = Array.from({length:slots},()=>({eq:'',ex:'',sets:'2',reps:'',notes:''}));
+      day.sessions.forEach((s,si)=>{
+        const isW=['Weights','Full Body','Lower Body','Upper Body','Push','Pull'].includes(s.type);
+        program.weeks[w][di][si]={sections:{
+          warmup:Array.from({length:3},()=>({eq:'',ex:'',sets:'',reps:'',notes:''})),
+          main:Array.from({length:isW?8:4},()=>isW?{eq:'',ex:'',sets:'2',reps:'',notes:''}:{activity:'',ctype:'',duration:'',workrest:'',intensity:'',notes:''})
+        }};
       });
     });
   }
   return program.weeks[w];
 }
 
-// ── views ─────────────────────────────────────────────────────────────────────
-function showView(v, btn){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.topbar-nav button').forEach(el=>el.classList.remove('active'));
-  document.getElementById(v).classList.add('active');
-  btn.classList.add('active');
-  if(v==='database') initDB();
-}
-
-// ── week bar ──────────────────────────────────────────────────────────────────
-function renderWeekBar(){
-  document.getElementById('weekBar').innerHTML = Array.from({length:12},(_,i)=>{
-    const w=i+1, has=!!program.weeks[w];
-    return `<button class="week-btn ${currentWeek===w?'active':''} ${has&&currentWeek!==w?'has-content':''}" onclick="switchWeek(${w})">W${w}</button>`;
-  }).join('');
-}
-function switchWeek(w){ currentWeek=w; renderWeekBar(); renderDays(); }
-
-// ── days ──────────────────────────────────────────────────────────────────────
 function renderDays(){
-  const data = getWeek(currentWeek);
-  document.getElementById('daysGrid').innerHTML = DAYS.map((day,di)=>`
-    <div class="day-block ${DAY_CLASSES[di]}">
+  const struct=program.structure.length?program.structure:currentStructure;
+  const data=getWeek(currentWeek);
+  document.getElementById('daysGrid').innerHTML=struct.map((day,di)=>`
+    <div class="day-block">
       <div class="day-header" onclick="toggleDay(${di})">
         <div class="day-header-left">
           <div class="day-num">${di+1}</div>
-          <span class="day-title">Day ${di+1} — ${day}</span>
+          <span class="day-title">${day.name||'Day '+(di+1)}</span>
           <span class="day-count" id="day-count-${di}"></span>
         </div>
-        <span class="day-toggle ${openDays[di]?'open':''}" id="day-toggle-${di}">▾</span>
+        <span class="day-toggle ${openDays[di]?'open':''}" id="day-toggle-${di}">v</span>
       </div>
       <div class="day-body ${openDays[di]?'open':''}" id="day-body-${di}">
-        ${SECTIONS.map(s=>renderSection(di,s,data[di][s.key])).join('')}
+        ${day.sessions.map((s,si)=>renderSession(di,si,s,data[di]?.[si])).join('')}
       </div>
     </div>`).join('');
-  DAYS.forEach((_,di)=>updateDayCount(di));
+  struct.forEach((_,di)=>updateDayCount(di));
 }
 
 function toggleDay(di){
@@ -531,337 +640,309 @@ function toggleDay(di){
 
 function updateDayCount(di){
   const data=getWeek(currentWeek);
-  const count = SECTIONS.reduce((n,s)=>n+data[di][s.key].filter(r=>r.ex).length,0);
+  const struct=program.structure.length?program.structure:currentStructure;
+  let count=0;
+  (struct[di]?.sessions||[]).forEach((_,si)=>{
+    const sd=data[di]?.[si];
+    if(sd)Object.values(sd.sections).forEach(slots=>count+=slots.filter(r=>r.ex).length);
+  });
   const el=document.getElementById(`day-count-${di}`);
-  if(el) el.textContent = count>0 ? `${count} exercise${count!==1?'s':''}` : '';
+  if(el)el.textContent=count>0?`${count} exercise${count!==1?'s':''}`:'';
 }
 
-// ── sections & rows ───────────────────────────────────────────────────────────
-function renderSection(di,sec,slots){
-  const type = SEC_TYPES[sec.key];
-  return `
-  <div class="section-block">
-    <div class="section-label sec-${sec.key}">${sec.icon} ${sec.label}</div>
+function renderSession(di,si,sc,sd){
+  const timeClass=sc.time==='AM'?'time-am':sc.time==='PM'?'time-pm':'';
+  const timeLabel=sc.time!=='Single'?sc.time:'';
+  const isW=['Weights','Full Body','Lower Body','Upper Body','Push','Pull'].includes(sc.type);
+  return `<div class="session-block">
+    <div class="session-header">
+      ${timeLabel?`<span class="session-time-badge ${timeClass}">${timeLabel}</span>`:''}
+      <span class="session-type-label">${sc.type}</span>
+    </div>
+    <div class="session-body">
+      ${renderSection(di,si,'warmup','Warm Up','sec-warmup',sd?.sections?.warmup||[])}
+      ${renderSection(di,si,'main',sc.type,isW?'sec-main':'sec-cardio',sd?.sections?.main||[])}
+    </div>
+  </div>`;
+}
+
+function isCardioType(type){
+  return ['Cardio','Run','Conditioning'].includes(type);
+}
+function renderSection(di,si,secKey,label,secClass,slots){
+  const type=secKey==='warmup'?'Mobility':label;
+  const isCardio=isCardioType(type)&&secKey!=='warmup';
+  if(isCardio){
+    return `<div class="section-block">
+      <div class="section-label ${secClass}">${label}</div>
+      <div class="cardio-row-headers">
+        <span class="rh">Activity</span><span class="rh">Type</span>
+        <span class="rh">Duration</span><span class="rh">Work / Rest</span>
+        <span class="rh">Intensity</span><span class="rh">Notes</span><span class="rh"></span>
+      </div>
+      <div class="ex-rows" id="rows-${di}-${si}-${secKey}">
+        ${slots.map((s,i)=>renderCardioRow(di,si,secKey,i,s)).join('')}
+      </div>
+      <button class="add-row-btn" onclick="addRow(${di},${si},'${secKey}')">+ add activity</button>
+    </div>`;
+  }
+  return `<div class="section-block">
+    <div class="section-label ${secClass}">${label}</div>
     <div class="row-headers">
       <span class="rh">Equipment</span><span class="rh">Exercise</span>
       <span class="rh">Sets</span><span class="rh">Reps</span>
       <span class="rh">Notes / cue</span><span class="rh"></span>
     </div>
-    <div class="ex-rows" id="rows-${di}-${sec.key}">
-      ${slots.map((s,i)=>renderRow(di,sec.key,i,s,type)).join('')}
+    <div class="ex-rows" id="rows-${di}-${si}-${secKey}">
+      ${slots.map((s,i)=>renderRow(di,si,secKey,i,s,type)).join('')}
     </div>
-    <button class="add-row-btn" onclick="addRow(${di},'${sec.key}')">+ add exercise</button>
+    <button class="add-row-btn" onclick="addRow(${di},${si},'${secKey}')">+ add exercise</button>
   </div>`;
 }
 
-function renderRow(di,secKey,idx,slot,type){
-  const equips = equipFor(type);
-  const eqOpts = `<option value="">Equipment...</option>${equips.map(e=>`<option ${e===slot.eq?'selected':''}>${e}</option>`).join('')}`;
-  const exList = slot.eq ? exForEquip(type,slot.eq) : exFor(type);
-  const exOpts = `<option value="">Select exercise...</option>${exList.map(e=>`<option ${e[0]===slot.ex?'selected':''}>${e[0]}</option>`).join('')}`;
-  const notesVal = slot.notes || (slot.ex ? getCue(slot.ex) : '');
-  return `
-  <div class="ex-row" id="row-${di}-${secKey}-${idx}">
-    <select class="equip-sel" onchange="onEquipChange(${di},'${secKey}',${idx},this.value)">${eqOpts}</select>
-    <select class="ex-sel ${slot.ex?'filled':''}" onchange="onExChange(${di},'${secKey}',${idx},this.value)">${exOpts}</select>
-    <input class="sets-in" value="${slot.sets||''}" placeholder="sets" oninput="onField(${di},'${secKey}',${idx},'sets',this.value)">
-    <input class="reps-in" value="${slot.reps||''}" placeholder="reps" oninput="onField(${di},'${secKey}',${idx},'reps',this.value)">
-    <input class="notes-in" value="${notesVal.replace(/"/g,'&quot;')}" placeholder="notes / coaching cue..." oninput="onField(${di},'${secKey}',${idx},'notes',this.value)">
-    <button class="rm-btn" onclick="removeRow(${di},'${secKey}',${idx})">×</button>
+function renderCardioRow(di,si,secKey,idx,slot){
+  var actOpts='<option value="">Activity...</option>';
+  CARDIO_ACTIVITIES.forEach(function(a){
+    actOpts+='<option'+(a===(slot.activity||'')?' selected':'')+'>'+a+'</option>';
+  });
+  var typeOpts='<option value="">Type...</option>';
+  CARDIO_TYPES.forEach(function(t){
+    typeOpts+='<option'+(t===(slot.ctype||'')?' selected':'')+'>'+t+'</option>';
+  });
+  var fn='onCardioField('+di+','+si+',"'+secKey+'",'+idx+',';
+  return '<div class="cardio-row">'+
+    '<select class="activity-sel" onchange="'+fn+'"activity",this.value)">'+actOpts+'</select>'+
+    '<select style="background:#fef3e2;border-color:#d4a84b" onchange="'+fn+'"ctype",this.value)">'+typeOpts+'</select>'+
+    '<input value="'+(slot.duration||'').replace(/"/g,'&quot;')+'" placeholder="30 min / 5km" oninput="'+fn+'"duration",this.value)">'+
+    '<input value="'+(slot.workrest||'').replace(/"/g,'&quot;')+'" placeholder="30s / 90s" oninput="'+fn+'"workrest",this.value)">'+
+    '<input value="'+(slot.intensity||'').replace(/"/g,'&quot;')+'" placeholder="RPE / Zone 2" oninput="'+fn+'"intensity",this.value)">'+
+    '<input value="'+(slot.notes||'').replace(/"/g,'&quot;')+'" placeholder="Notes..." oninput="'+fn+'"notes",this.value)">'+
+    '<button class="rm-btn" onclick="removeRow('+di+','+si+',"'+secKey+'",'+idx+')">x</button>'+
+    '</div>';
+}
+
+function onCardioField(di,si,secKey,idx,field,val){
+  const d=getWeek(currentWeek);
+  if(d[di]?.[si]?.sections?.[secKey]?.[idx]) d[di][si].sections[secKey][idx][field]=val;
+}
+
+function renderRow(di,si,secKey,idx,slot,type){
+  const equips=equipFor(type);
+  const eqOpts=`<option value="">Equipment...</option>${equips.map(e=>`<option ${e===slot.eq?'selected':''} >${e}</option>`).join('')}`;
+  const exList=slot.eq?exForEquip(type,slot.eq):exFor(type);
+  const exOpts=`<option value="">Select exercise...</option>${exList.map(e=>`<option ${e[0]===slot.ex?'selected':''} >${e[0]}</option>`).join('')}`;
+  const notesVal=slot.notes||(slot.ex?getCue(slot.ex):'');
+  return `<div class="ex-row">
+    <select class="equip-sel" onchange="onEquip(${di},${si},'${secKey}',${idx},this.value)">${eqOpts}</select>
+    <select class="ex-sel ${slot.ex?'filled':''}" onchange="onEx(${di},${si},'${secKey}',${idx},this.value)">${exOpts}</select>
+    <input value="${slot.sets||''}" placeholder="sets" oninput="onField(${di},${si},'${secKey}',${idx},'sets',this.value)">
+    <input value="${slot.reps||''}" placeholder="reps" oninput="onField(${di},${si},'${secKey}',${idx},'reps',this.value)">
+    <input value="${notesVal.replace(/"/g,'&quot;')}" placeholder="notes / cue..." oninput="onField(${di},${si},'${secKey}',${idx},'notes',this.value)">
+    <button class="rm-btn" onclick="removeRow(${di},${si},'${secKey}',${idx})">x</button>
   </div>`;
 }
 
-function refreshSection(di,secKey){
+function onEquip(di,si,secKey,idx,val){const d=getWeek(currentWeek);d[di][si].sections[secKey][idx].eq=val;d[di][si].sections[secKey][idx].ex='';d[di][si].sections[secKey][idx].notes='';refreshSection(di,si,secKey)}
+function onEx(di,si,secKey,idx,val){const d=getWeek(currentWeek);d[di][si].sections[secKey][idx].ex=val;if(!d[di][si].sections[secKey][idx].notes)d[di][si].sections[secKey][idx].notes=getCue(val);refreshSection(di,si,secKey)}
+function onField(di,si,secKey,idx,field,val){const d=getWeek(currentWeek);if(d[di]?.[si]?.sections?.[secKey]?.[idx])d[di][si].sections[secKey][idx][field]=val}
+function addRow(di,si,secKey){
+  const d=getWeek(currentWeek);
+  const struct=program.structure.length?program.structure:currentStructure;
+  const sc=struct[di]?.sessions[si];
+  const type=secKey==='warmup'?'Mobility':(sc?.type||'Weights');
+  const isCardio=isCardioType(type)&&secKey!=='warmup';
+  if(isCardio){
+    d[di][si].sections[secKey].push({activity:'',ctype:'',duration:'',workrest:'',intensity:'',notes:''});
+  } else {
+    d[di][si].sections[secKey].push({eq:'',ex:'',sets:'2',reps:'',notes:''});
+  }
+  refreshSection(di,si,secKey);
+}
+function removeRow(di,si,secKey,idx){const d=getWeek(currentWeek);d[di][si].sections[secKey].splice(idx,1);refreshSection(di,si,secKey)}
+
+function refreshSection(di,si,secKey){
+  const struct=program.structure.length?program.structure:currentStructure;
+  const sc=struct[di]?.sessions[si];
   const data=getWeek(currentWeek);
-  const sec=SECTIONS.find(s=>s.key===secKey);
-  const type=SEC_TYPES[secKey];
-  document.getElementById(`rows-${di}-${secKey}`).innerHTML =
-    data[di][secKey].map((s,i)=>renderRow(di,secKey,i,s,type)).join('');
+  const slots=data[di]?.[si]?.sections?.[secKey]||[];
+  const type=secKey==='warmup'?'Mobility':(sc?.type||'Weights');
+  const label=secKey==='warmup'?'Warm Up':(sc?.type||'Main');
+  const isW=['Weights','Full Body','Lower Body','Upper Body','Push','Pull'].includes(sc?.type);
+  const secClass=secKey==='warmup'?'sec-warmup':isW?'sec-main':'sec-cardio';
+  const isCardio=isCardioType(type)&&secKey!=='warmup';
+  document.getElementById(`rows-${di}-${si}-${secKey}`).innerHTML=isCardio?slots.map((s,i)=>renderCardioRow(di,si,secKey,i,s)).join(''):slots.map((s,i)=>renderRow(di,si,secKey,i,s,type)).join('');
   updateDayCount(di);
 }
 
-function onEquipChange(di,secKey,idx,val){
-  const d=getWeek(currentWeek); d[di][secKey][idx].eq=val; d[di][secKey][idx].ex=''; d[di][secKey][idx].notes='';
-  refreshSection(di,secKey);
-}
-function onExChange(di,secKey,idx,val){
-  const d=getWeek(currentWeek); d[di][secKey][idx].ex=val;
-  if(!d[di][secKey][idx].notes) d[di][secKey][idx].notes=getCue(val);
-  refreshSection(di,secKey);
-}
-function onField(di,secKey,idx,field,val){
-  const d=getWeek(currentWeek);
-  if(d[di][secKey][idx]) d[di][secKey][idx][field]=val;
-}
-function addRow(di,secKey){
-  const d=getWeek(currentWeek); d[di][secKey].push({eq:'',ex:'',sets:'2',reps:'',notes:''});
-  refreshSection(di,secKey);
-}
-function removeRow(di,secKey,idx){
-  const d=getWeek(currentWeek); d[di][secKey].splice(idx,1);
-  refreshSection(di,secKey);
-}
-
-// ── copy week 1 ───────────────────────────────────────────────────────────────
 function copyWeekToAll(){
   const src=getWeek(1);
-  for(let w=2;w<=12;w++){
-    program.weeks[w]=JSON.parse(JSON.stringify(src));
-  }
-  toast('Week 1 copied to all weeks. Edit sets and reps in each week as needed.');
-  renderWeekBar();
+  const len=parseInt(document.getElementById('progLength').value);
+  for(let w=2;w<=len;w++)program.weeks[w]=JSON.parse(JSON.stringify(src));
+  toast('Week 1 copied to all weeks.');renderWeekBar();
 }
 
-// ── save / load ───────────────────────────────────────────────────────────────
 function saveProgram(){
   program.meta={
     client:document.getElementById('clientName').value,
     prog:document.getElementById('progName').value,
     date:document.getElementById('startDate').value,
-    notes:document.getElementById('coachNotes').value
+    notes:document.getElementById('coachNotes').value,
+    length:document.getElementById('progLength').value,
+    numDays:document.getElementById('numDays').value,
   };
-  localStorage.setItem('pt_builder_v1',JSON.stringify(program));
+  program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,parseInt(program.meta.numDays))));
+  localStorage.setItem('pt_builder_v2',JSON.stringify(program));
   toast('Program saved.');
 }
+
 function loadProgram(){
-  const s=localStorage.getItem('pt_builder_v1');
-  if(!s){toast('No saved program found.');return;}
+  const s=localStorage.getItem('pt_builder_v2');
+  if(!s){toast('No saved program found.');return}
   program=JSON.parse(s);
   if(program.meta){
     document.getElementById('clientName').value=program.meta.client||'';
     document.getElementById('progName').value=program.meta.prog||'';
     document.getElementById('startDate').value=program.meta.date||'';
     document.getElementById('coachNotes').value=program.meta.notes||'';
+    if(program.meta.length)document.getElementById('progLength').value=program.meta.length;
+    if(program.meta.numDays)document.getElementById('numDays').value=program.meta.numDays;
   }
-  renderWeekBar(); renderDays(); toast('Program loaded.');
-}
-
-// ── export ────────────────────────────────────────────────────────────────────
-function buildWeekText(w){
-  const data=program.weeks[w]; if(!data) return '';
-  let t=`WEEK ${w}\n${'─'.repeat(36)}\n`;
-  DAYS.forEach((day,di)=>{
-    let dayT=`\nDay ${di+1} — ${day}\n`;
-    let hasEx=false;
-    SECTIONS.forEach(s=>{
-      const slots=(data[di]||{})[s.key]||[];
-      const filled=slots.filter(r=>r.ex);
-      if(!filled.length) return;
-      hasEx=true;
-      dayT+=`\n  ${s.label}\n`;
-      filled.forEach((r,i)=>{
-        const sr=r.sets&&r.reps?`${r.sets} × ${r.reps}`:r.sets||r.reps||'';
-        dayT+=`    ${i+1}. ${r.ex}${sr?' — '+sr:''}${r.notes?' ('+r.notes+')':''}\n`;
-      });
-    });
-    if(hasEx) t+=dayT;
-  });
-  return t;
-}
-
-function exportWeek(){
-  const client=document.getElementById('clientName').value||'Client';
-  let txt=`${client.toUpperCase()} — WEEK ${currentWeek} PROGRAM\n${'═'.repeat(40)}\n\n`;
-  txt+=buildWeekText(currentWeek);
-  download(txt,`${client.replace(/\s+/g,'_')}_Week${currentWeek}.txt`);
+  if(program.structure?.length){
+    currentStructure=program.structure;
+    document.getElementById('numDays').value=currentStructure.length;
+    renderDayConfigs();
+  }
+  program.structure.forEach((_,i)=>openDays[i]=i===0);
+  renderWeekBar();renderDays();
+  toast('Program loaded.');
 }
 
 function exportFull(){
   const client=document.getElementById('clientName').value||'Client';
   const prog=document.getElementById('progName').value||'Program';
-  const notes=document.getElementById('coachNotes').value;
-  let txt=`${client.toUpperCase()}\n${prog.toUpperCase()}\n${'═'.repeat(40)}\n`;
-  if(notes) txt+=`Coach notes: ${notes}\n`;
-  txt+=`\n${buildProgressionGuide()}\n\n`;
-  for(let w=1;w<=12;w++){
-    if(!program.weeks[w]) continue;
-    const wt=buildWeekText(w);
-    if(wt.trim()) txt+=wt+'\n';
+  const len=parseInt(document.getElementById('progLength').value);
+  const struct=program.structure.length?program.structure:currentStructure;
+  let txt=`${client.toUpperCase()}\n${prog.toUpperCase()}\n${'='.repeat(40)}\n\n`;
+  for(let w=1;w<=len;w++){
+    if(!program.weeks[w])continue;
+    const data=program.weeks[w];
+    let wt=`WEEK ${w}\n${'─'.repeat(36)}\n`;
+    struct.forEach((day,di)=>{
+      let dayT=`\nDay ${di+1} — ${day.name}\n`;let hasEx=false;
+      day.sessions.forEach((s,si)=>{
+        const sd=data[di]?.[si];if(!sd)return;
+        const tl=s.time!=='Single'?` (${s.time})`:'';
+        Object.entries(sd.sections).forEach(([sk,slots])=>{
+          const filled=slots.filter(r=>r.ex);if(!filled.length)return;
+          hasEx=true;
+          dayT+=`\n  ${sk==='warmup'?'Warm Up':s.type}${tl}\n`;
+          filled.forEach((r,i)=>{
+            const sr=r.sets&&r.reps?`${r.sets} x ${r.reps}`:r.sets||r.reps||'';
+            dayT+=`    ${i+1}. ${r.ex}${sr?' — '+sr:''}${r.notes?' ('+r.notes+')':''}\n`;
+          });
+        });
+      });
+      if(hasEx)wt+=dayT;
+    });
+    if(wt.trim())txt+=wt+'\n';
   }
   download(txt,`${client.replace(/\s+/g,'_')}_FullProgram.txt`);
 }
 
-function buildProgressionGuide(){
-  return `PROGRESSIVE OVERLOAD — HOW THIS PROGRAM WORKS\n${'─'.repeat(44)}\n\nEvery week you should be doing more than the week before.\nThat more comes in one of three forms:\n\n  1. Add Weight     — same reps, heavier bar\n  2. Add Reps       — same weight, one or two extra reps\n  3. Add Exercises  — same weight and reps on each lift, more exercises in the session\n\nYou won't always get all three. The rule is simple:\n  If you hit the top of your rep range with good form — add weight next week.\n  If you didn't hit the top — add a rep.\n\nThe only rule: something must go up every week.\n${'─'.repeat(44)}`;
+function exportWeekPDF(){
+  const client=document.getElementById('clientName').value||'Client';
+  const prog=document.getElementById('progName').value||'Program';
+  const struct=program.structure.length?program.structure:currentStructure;
+  const data=getWeek(currentWeek);
+  let html=`<html><head><meta charset="UTF-8"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;color:#0a0a0a;padding:32px;font-size:12px}
+    .title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px}
+    .sub{font-size:13px;color:#666;margin-bottom:20px}
+    .meta-bar{display:flex;border:1px solid #e2e2de;border-radius:8px;overflow:hidden;margin-bottom:28px}
+    .mi{flex:1;padding:10px 14px;border-right:1px solid #e2e2de}.mi:last-child{border-right:none}
+    .ml{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9a9a92;margin-bottom:2px}
+    .mv{font-size:12px;font-weight:500}
+    .dh{padding:8px 12px;background:#1a1a1a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-top:20px;margin-bottom:8px;border-radius:4px}
+    .sh{display:flex;align-items:center;gap:8px;margin:12px 0 6px}
+    .tb{font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:0.06em}
+    .am{background:#e3f2fd;color:#0f3460}.pm{background:#ede7f6;color:#3a1a6a}
+    .sl{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e8eaf6;color:#1a1a2e;margin-bottom:4px;display:inline-block}
+    table{width:100%;border-collapse:collapse;margin-bottom:8px}
+    th{background:#f0f0ee;padding:5px 8px;text-align:left;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b6b62}
+    td{padding:7px 8px;border-bottom:1px solid #f0f0ee;font-size:11px}
+    tr:nth-child(even) td{background:#fafaf8}
+    .en{font-weight:500}.cue{color:#6b6b62;font-style:italic}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid #e2e2de;display:flex;justify-content:space-between;font-size:10px;color:#9a9a92}
+  </style></head><body>`;
+  html+=`<div class="title">${client}</div><div class="sub">${prog} — Week ${currentWeek}</div>`;
+  html+=`<div class="meta-bar"><div class="mi"><div class="ml">Week</div><div class="mv">Week ${currentWeek}</div></div><div class="mi"><div class="ml">Days</div><div class="mv">${struct.length} days</div></div><div class="mi"><div class="ml">Coach</div><div class="mv">Will</div></div></div>`;
+  struct.forEach((day,di)=>{
+    let dc='';
+    day.sessions.forEach((s,si)=>{
+      const sd=data[di]?.[si];if(!sd)return;
+      const tl=s.time!=='Single'?s.time:'';
+      let sc='';
+      Object.entries(sd.sections).forEach(([sk,slots])=>{
+        const filled=slots.filter(r=>r.ex);if(!filled.length)return;
+        const sl=sk==='warmup'?'Warm Up':s.type;
+        sc+=`<div class="sl">${sl}</div><table><thead><tr><th style="width:35%">Exercise</th><th style="width:10%">Sets</th><th style="width:12%">Reps</th><th>Cue</th></tr></thead><tbody>`;
+        filled.forEach(r=>{
+        if(r.activity!==undefined){
+          sc+=`<tr><td><span class="en">${r.activity||'—'}</span></td><td>${r.ctype||'—'}</td><td>${r.duration||'—'}</td><td class="cue">${r.workrest?'Work/Rest: '+r.workrest+(r.intensity?' · ':'')+r.intensity:r.intensity||''} ${r.notes||''}</td></tr>`;
+        } else {
+          sc+=`<tr><td><span class="en">${r.ex}</span></td><td>${r.sets||'—'}</td><td>${r.reps||'—'}</td><td class="cue">${r.notes||''}</td></tr>`;
+        }
+      });
+        sc+='</tbody></table>';
+      });
+      if(sc)dc+=`<div class="sh">${tl?`<span class="tb ${s.time==='AM'?'am':'pm'}">${tl}</span>`:''}<span style="font-size:12px;font-weight:500">${s.type}</span></div>${sc}`;
+    });
+    if(dc)html+=`<div class="dh">Day ${di+1} — ${day.name}</div>${dc}`;
+  });
+  html+=`<footer><span>Programmed by Will — Pro.am</span><span>Week ${currentWeek}</span></footer></body></html>`;
+  const win=window.open('','_blank');win.document.write(html);win.document.close();win.onload=()=>win.print();
 }
 
 function download(content,filename){
   const blob=new Blob([content],{type:'text/plain'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
   toast(`Exported: ${filename}`);
 }
 
 function toast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.style.display='block';
+  el.textContent=msg;el.style.display='block';
   setTimeout(()=>el.style.display='none',3000);
 }
 
-// ── database ──────────────────────────────────────────────────────────────────
 function initDB(){
-  const bpSel=document.getElementById('fBP');
-  const eqSel=document.getElementById('fEQ');
-  if(bpSel.options.length<2){
-    [...new Set(EXERCISES.map(e=>e[5]))].sort().forEach(v=>{
-      const o=new Option(v,v); bpSel.add(o);
-    });
-    [...new Set(EXERCISES.map(e=>e[1]))].sort().forEach(v=>{
-      const o=new Option(v,v); eqSel.add(o);
-    });
+  const bp=document.getElementById('fBP'),eq=document.getElementById('fEQ');
+  if(bp.options.length<2){
+    [...new Set(EXERCISES.map(e=>e[5]))].sort().forEach(v=>{const o=new Option(v,v);bp.add(o);});
+    [...new Set(EXERCISES.map(e=>e[1]))].sort().forEach(v=>{const o=new Option(v,v);eq.add(o);});
   }
   filterDB();
 }
 
 function filterDB(){
-  const bp=document.getElementById('fBP').value;
-  const eq=document.getElementById('fEQ').value;
-  const diff=document.getElementById('fDiff').value;
-  const q=document.getElementById('fSearch').value.toLowerCase();
-  const res=EXERCISES.filter(e=>
-    (!bp||e[5]===bp)&&(!eq||e[1]===eq)&&(!diff||e[4]===diff)&&
-    (!q||e[0].toLowerCase().includes(q)||e[2].toLowerCase().includes(q))
-  ).sort((a,b)=>a[5].localeCompare(b[5])||a[0].localeCompare(b[0]));
+  const bp=document.getElementById('fBP').value,eq=document.getElementById('fEQ').value;
+  const diff=document.getElementById('fDiff').value,q=document.getElementById('fSearch').value.toLowerCase();
+  const res=EXERCISES.filter(e=>(!bp||e[5]===bp)&&(!eq||e[1]===eq)&&(!diff||e[4]===diff)&&(!q||e[0].toLowerCase().includes(q)||e[2].toLowerCase().includes(q)));
   document.getElementById('dbCount').textContent=`${res.length} of ${EXERCISES.length} exercises`;
   const dc={Beginner:'b-beg',Intermediate:'b-int',Advanced:'b-adv'};
   document.getElementById('dbGrid').innerHTML=res.map(e=>`
     <div class="db-card" onclick="this.classList.toggle('expanded')">
       <div class="db-name">${e[0]}</div>
-      <div class="db-meta">
-        <span class="badge b-equip">${e[1]}</span>
-        <span class="badge ${dc[e[4]]||''}">${e[4]}</span>
-      </div>
+      <div class="db-meta"><span class="badge b-equip">${e[1]}</span><span class="badge ${dc[e[4]]||''}">${e[4]}</span></div>
       <div style="font-size:11px;color:var(--grey-400);margin-top:3px">${e[2]}${e[3]&&e[3]!=='—'?' · '+e[3]:''}</div>
-      <div class="db-cue">${e[6]}<div class="db-tempo">${e[7]}</div></div>
+      <div class="db-cue">${e[6]}<div style="font-size:10px;color:var(--grey-400);margin-top:4px">${e[7]}</div></div>
     </div>`).join('');
 }
 
-// ── init ──────────────────────────────────────────────────────────────────────
+renderDayConfigs();
 renderWeekBar();
+openDays={0:true,1:false,2:false,3:false};
 renderDays();
-
-// ── PASSWORD GATE ──────────────────────────────────────────────────────────
-const PASS = 'PTBalil123';
-function checkPass(){
-  const val = document.getElementById('gateInput').value;
-  if(val === PASS){
-    sessionStorage.setItem('pt_auth','1');
-    document.getElementById('gate').style.display='none';
-    document.getElementById('mainApp').style.display='flex';
-    document.getElementById('mainApp').style.flexDirection='column';
-    document.getElementById('mainApp').style.minHeight='100vh';
-  } else {
-    document.getElementById('gateError').textContent='Incorrect password. Try again.';
-    document.getElementById('gateInput').value='';
-    document.getElementById('gateInput').focus();
-  }
-}
-// Check session on load
-if(sessionStorage.getItem('pt_auth')==='1'){
-  document.getElementById('gate').style.display='none';
-  document.getElementById('mainApp').style.display='flex';
-  document.getElementById('mainApp').style.flexDirection='column';
-  document.getElementById('mainApp').style.minHeight='100vh';
-}
-
-// ── PDF EXPORT ─────────────────────────────────────────────────────────────
-function exportWeekPDF(){
-  const client = document.getElementById('clientName').value || 'Client';
-  const prog   = document.getElementById('progName').value || 'Program';
-  const data   = program.weeks[currentWeek];
-  if(!data){ toast('No exercises in this week yet.'); return; }
-
-  let html = `
-  <html><head><meta charset="UTF-8">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;color:#0a0a0a;background:#fff;padding:32px;font-size:12px}
-    .cover-name{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px}
-    .cover-sub{font-size:13px;color:#6b6b62;margin-bottom:20px}
-    .meta-bar{display:flex;gap:0;border:1px solid #e2e2de;border-radius:8px;overflow:hidden;margin-bottom:28px}
-    .meta-item{flex:1;padding:10px 14px;border-right:1px solid #e2e2de}
-    .meta-item:last-child{border-right:none}
-    .meta-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9a9a92;margin-bottom:2px}
-    .meta-value{font-size:12px;font-weight:500}
-    .divider{border:none;border-top:1px solid #e2e2de;margin:20px 0}
-    .day-header{padding:8px 12px;border-radius:6px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;margin-top:18px}
-    .day-0{background:#e8eaf6;color:#1a1a2e}
-    .day-1{background:#e3f2fd;color:#0f3460}
-    .day-2{background:#e8eaf6;color:#16213e}
-    .day-3{background:#ede7f6;color:#3a1a6a}
-    .sec-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:0.04em;margin-bottom:6px;margin-top:10px}
-    .sec-warmup{background:#e8eaf6;color:#1a1a2e}
-    .sec-main{background:#ddeeff;color:#0f3460}
-    .sec-cardio{background:#f3e5f5;color:#4a1a6a}
-    table{width:100%;border-collapse:collapse;margin-bottom:4px}
-    th{background:#f0f0ee;padding:6px 10px;text-align:left;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b6b62;border-bottom:1px solid #e2e2de}
-    td{padding:8px 10px;border-bottom:1px solid #f0f0ee;font-size:11px;vertical-align:top}
-    tr:nth-child(even) td{background:#fafaf8}
-    .ex-name{font-weight:500}
-    .notes-text{color:#6b6b62;font-style:italic}
-    .po-box{background:#f8f8f7;border-left:3px solid #0a0a0a;padding:14px 16px;margin-top:28px;border-radius:0 6px 6px 0}
-    .po-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-    .po-row{display:flex;gap:10px;margin-bottom:6px}
-    .po-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-    .po-text{font-size:11px;padding-top:2px}
-    footer{margin-top:32px;padding-top:16px;border-top:1px solid #e2e2de;display:flex;justify-content:space-between;font-size:10px;color:#9a9a92}
-  </style></head><body>`;
-
-  html += `<div class="cover-name">${client}</div>`;
-  html += `<div class="cover-sub">${prog} — Week ${currentWeek}</div>`;
-
-  const startDate = document.getElementById('startDate').value;
-  const coachNotes = document.getElementById('coachNotes').value;
-  html += `<div class="meta-bar">
-    <div class="meta-item"><div class="meta-label">Week</div><div class="meta-value">Week ${currentWeek} of 12</div></div>
-    <div class="meta-item"><div class="meta-label">Program</div><div class="meta-value">${prog}</div></div>
-    ${startDate ? `<div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">${startDate}</div></div>` : ''}
-    ${coachNotes ? `<div class="meta-item"><div class="meta-label">Coach Notes</div><div class="meta-value">${coachNotes}</div></div>` : ''}
-  </div><hr class="divider">`;
-
-  const dayClasses = ['day-0','day-1','day-2','day-3'];
-  DAYS.forEach((day,di) => {
-    let dayHtml = '';
-    SECTIONS.forEach(s => {
-      const slots = (data[di]||{})[s.key]||[];
-      const filled = slots.filter(r=>r.ex);
-      if(!filled.length) return;
-      dayHtml += `<div class="sec-label sec-${s.key}">${s.icon} ${s.label}</div>`;
-      dayHtml += `<table><thead><tr><th style="width:36%">Exercise</th><th style="width:12%">Sets</th><th style="width:14%">Reps</th><th>Notes / Cue</th></tr></thead><tbody>`;
-      filled.forEach(r => {
-        dayHtml += `<tr>
-          <td><span class="ex-name">${r.ex}</span></td>
-          <td>${r.sets||'—'}</td>
-          <td>${r.reps||'—'}</td>
-          <td class="notes-text">${r.notes||''}</td>
-        </tr>`;
-      });
-      dayHtml += `</tbody></table>`;
-    });
-    if(dayHtml){
-      html += `<div class="day-header ${dayClasses[di]}">Day ${di+1} — ${day}</div>${dayHtml}`;
-    }
-  });
-
-  html += `<div class="po-box">
-    <div class="po-title">Progressive Overload — How This Program Works</div>
-    <div class="po-row"><div class="po-num" style="background:#1a3a6b">1</div><div class="po-text"><strong>Add Weight</strong> — same reps, heavier bar</div></div>
-    <div class="po-row"><div class="po-num" style="background:#1a4a2a">2</div><div class="po-text"><strong>Add Reps</strong> — same weight, one or two extra reps</div></div>
-    <div class="po-row"><div class="po-num" style="background:#5a3a00">3</div><div class="po-text"><strong>Add Exercises</strong> — same weight and reps on each lift, more exercises in the session</div></div>
-    <div style="margin-top:10px;font-size:11px;font-weight:500">The only rule: something must go up every week. Weight or reps. Pick one.</div>
-  </div>`;
-
-  html += `<footer><span>Programmed by Will</span><span>${client} — Week ${currentWeek}</span><span>Hybrid Athlete Programme</span></footer>`;
-  html += '</body></html>';
-
-  const win = window.open('','_blank');
-  win.document.write(html);
-  win.document.close();
-  win.onload = () => { win.print(); };
-}
-
 </script>
-</div>
-</body>
-</html>
