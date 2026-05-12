@@ -105,7 +105,10 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .row-headers{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;padding:0 0 3px}
 .rh{font-size:10px;color:var(--grey-400);font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
 .ex-rows{display:flex;flex-direction:column;gap:5px}
-.ex-row{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 28px;gap:6px;align-items:center}
+.ex-row{display:grid;grid-template-columns:minmax(120px,1.2fr) minmax(150px,2fr) 52px 70px minmax(100px,2fr) 18px 28px;gap:6px;align-items:center}
+.move-btns{display:flex;flex-direction:column;gap:1px;width:18px;flex-shrink:0}
+.move-btn{width:18px;height:13px;border:none;background:transparent;color:var(--grey-300);cursor:pointer;font-size:9px;padding:0;line-height:1}
+.move-btn:hover{color:var(--black)}
 .ex-row select,.ex-row input{padding:6px 10px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:12px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black);width:100%}
 .ex-row select:focus,.ex-row input:focus{outline:none;border-color:var(--grey-400)}
 .ex-row .equip-sel{background:var(--grey-50);font-weight:500}
@@ -227,7 +230,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
   <div class="bottom-bar">
     <button class="btn primary" onclick="exportWeekPDF()">Export week PDF</button>
     <button class="btn" onclick="exportFull()">Export full program</button>
-    <button class="btn" onclick="copyWeekToAll()">Copy Week 1 to all weeks</button>
+    <button class="btn" onclick="copyWeekToAll()">Cascade weeks from Week 1</button>
     <button class="btn" onclick="saveProgram()">Save</button>
     <button class="btn" onclick="loadProgram()">Load</button>
   </div>
@@ -738,6 +741,7 @@ function renderRow(di,si,secKey,idx,slot,type){
     <input value="${slot.sets||''}" placeholder="sets" oninput="onField(${di},${si},'${secKey}',${idx},'sets',this.value)">
     <input value="${slot.reps||''}" placeholder="reps" oninput="onField(${di},${si},'${secKey}',${idx},'reps',this.value)">
     <input value="${notesVal.replace(/"/g,'&quot;')}" placeholder="notes / cue..." oninput="onField(${di},${si},'${secKey}',${idx},'notes',this.value)">
+    <div class="move-btns"><button class="move-btn" onclick="moveRow(${di},${si},'${secKey}',${idx},-1)">&#9650;</button><button class="move-btn" onclick="moveRow(${di},${si},'${secKey}',${idx},1)">&#9660;</button></div>
     <button class="rm-btn" onclick="removeRow(${di},${si},'${secKey}',${idx})">x</button>
   </div>`;
 }
@@ -758,6 +762,14 @@ function addRow(di,si,secKey){
   }
   refreshSection(di,si,secKey);
 }
+function moveRow(di,si,secKey,idx,dir){
+  const d=getWeek(currentWeek);
+  const slots=d[di][si].sections[secKey];
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=slots.length)return;
+  const tmp=slots[idx];slots[idx]=slots[newIdx];slots[newIdx]=tmp;
+  refreshSection(di,si,secKey);
+}
 function removeRow(di,si,secKey,idx){const d=getWeek(currentWeek);d[di][si].sections[secKey].splice(idx,1);refreshSection(di,si,secKey)}
 
 function refreshSection(di,si,secKey){
@@ -775,10 +787,15 @@ function refreshSection(di,si,secKey){
 }
 
 function copyWeekToAll(){
-  const src=getWeek(1);
   const len=parseInt(document.getElementById('progLength').value);
-  for(let w=2;w<=len;w++)program.weeks[w]=JSON.parse(JSON.stringify(src));
-  toast('Week 1 copied to all weeks.');renderWeekBar();
+  // Ensure week 1 exists first
+  getWeek(1);
+  // Cascade: copy each week from the previous, using already-copied data
+  for(let w=2;w<=len;w++){
+    program.weeks[w]=JSON.parse(JSON.stringify(program.weeks[w-1]));
+  }
+  toast('Cascaded: each week now copies from the previous week.');
+  renderWeekBar();
 }
 
 function saveProgram(){
