@@ -125,6 +125,13 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 .btn.primary:hover{opacity:0.85}
 .toast{padding:8px 14px;background:var(--grey-900);color:var(--white);border-radius:var(--radius);font-size:12px;display:none;margin-top:8px}
 
+
+.log-card{background:var(--white);border:1px solid var(--grey-200);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.log-card:hover{border-color:var(--grey-300)}
+.log-info{display:flex;flex-direction:column;gap:3px}
+.log-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600}
+.log-meta{font-size:12px;color:var(--grey-400)}
+.log-actions{display:flex;gap:8px;flex-shrink:0}
 .db-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
 .db-filters select,.db-filters input{padding:8px 12px;border:1px solid var(--grey-200);border-radius:var(--radius);font-size:13px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black);width:100%}
 .db-count{font-size:12px;color:var(--grey-400);margin-bottom:12px}
@@ -179,6 +186,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
   <div class="topbar-nav">
     <button class="active" onclick="showView('builder',this)">Programs</button>
     <button onclick="showView('database',this)">Exercise DB</button>
+    <button onclick="showView('programs',this)">Saved Programs</button>
   </div>
 </div>
 <div class="content">
@@ -249,6 +257,15 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
   </div>
   <div id="dbCount" class="db-count"></div>
   <div id="dbGrid" class="db-grid"></div>
+</div>
+
+<div id="programs" class="view">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600">Saved Programs</h2>
+    <button class="btn primary" onclick="saveToLog()">Save current program to log</button>
+  </div>
+  <div id="programLog" style="display:flex;flex-direction:column;gap:8px"></div>
+  <div id="logEmpty" style="padding:40px;text-align:center;color:var(--grey-400);font-size:13px;border:1px dashed var(--grey-200);border-radius:var(--radius-lg);display:none">No saved programs yet. Build a program and save it to the log.</div>
 </div>
 
 </div>
@@ -538,6 +555,7 @@ function showView(v,btn){
   document.getElementById(v).classList.add('active');
   btn.classList.add('active');
   if(v==='database')initDB();
+  if(v==='programs')renderProgramLog();
 }
 
 function updateDayConfigs(){
@@ -595,7 +613,15 @@ function renderWeekBar(){
   }).join('');
 }
 
-function switchWeek(w){currentWeek=w;renderWeekBar();renderDays()}
+function switchWeek(w){
+  // If moving forward and the target week has never been manually edited, auto-populate from previous week
+  if(w > currentWeek && w > 1 && !program.weekEdited?.[w] && program.weeks[currentWeek]){
+    program.weeks[w] = JSON.parse(JSON.stringify(program.weeks[currentWeek]));
+  }
+  currentWeek=w;
+  renderWeekBar();
+  renderDays();
+}
 
 function getWeek(w){
   const struct=program.structure.length?program.structure:currentStructure;
@@ -726,7 +752,7 @@ function renderCardioRow(di,si,secKey,idx,slot){
 
 function onCardioField(di,si,secKey,idx,field,val){
   const d=getWeek(currentWeek);
-  if(d[di]?.[si]?.sections?.[secKey]?.[idx]) d[di][si].sections[secKey][idx][field]=val;
+  if(d[di]?.[si]?.sections?.[secKey]?.[idx]){d[di][si].sections[secKey][idx][field]=val;if(!program.weekEdited)program.weekEdited={};program.weekEdited[currentWeek]=true;}
 }
 
 function renderRow(di,si,secKey,idx,slot,type){
@@ -748,7 +774,7 @@ function renderRow(di,si,secKey,idx,slot,type){
 
 function onEquip(di,si,secKey,idx,val){const d=getWeek(currentWeek);d[di][si].sections[secKey][idx].eq=val;d[di][si].sections[secKey][idx].ex='';d[di][si].sections[secKey][idx].notes='';refreshSection(di,si,secKey)}
 function onEx(di,si,secKey,idx,val){const d=getWeek(currentWeek);d[di][si].sections[secKey][idx].ex=val;if(!d[di][si].sections[secKey][idx].notes)d[di][si].sections[secKey][idx].notes=getCue(val);refreshSection(di,si,secKey)}
-function onField(di,si,secKey,idx,field,val){const d=getWeek(currentWeek);if(d[di]?.[si]?.sections?.[secKey]?.[idx])d[di][si].sections[secKey][idx][field]=val}
+function onField(di,si,secKey,idx,field,val){const d=getWeek(currentWeek);if(d[di]?.[si]?.sections?.[secKey]?.[idx]){d[di][si].sections[secKey][idx][field]=val;if(!program.weekEdited)program.weekEdited={};program.weekEdited[currentWeek]=true;}}
 function addRow(di,si,secKey){
   const d=getWeek(currentWeek);
   const struct=program.structure.length?program.structure:currentStructure;
@@ -788,13 +814,13 @@ function refreshSection(di,si,secKey){
 
 function copyWeekToAll(){
   const len=parseInt(document.getElementById('progLength').value);
-  // Ensure week 1 exists first
   getWeek(1);
-  // Cascade: copy each week from the previous, using already-copied data
   for(let w=2;w<=len;w++){
     program.weeks[w]=JSON.parse(JSON.stringify(program.weeks[w-1]));
   }
-  toast('Cascaded: each week now copies from the previous week.');
+  // Mark all weeks as unedited so auto-cascade still works going forward
+  program.weekEdited={};
+  toast('Cascaded from Week 1 through Week '+len+'. Each week copies the one before it.');
   renderWeekBar();
 }
 
@@ -958,8 +984,84 @@ function filterDB(){
     </div>`).join('');
 }
 
+// ── PROGRAM LOG ──────────────────────────────────────────────────────────────
+function saveToLog(){
+  const client = document.getElementById('clientName').value || 'Unnamed';
+  const prog   = document.getElementById('progName').value || 'Unnamed program';
+  const date   = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  program.meta = {
+    client, prog,
+    date:   document.getElementById('startDate').value,
+    notes:  document.getElementById('coachNotes').value,
+    length: document.getElementById('progLength').value,
+    numDays:document.getElementById('numDays').value,
+  };
+  program.structure = JSON.parse(JSON.stringify(currentStructure.slice(0, parseInt(program.meta.numDays))));
+  const log = JSON.parse(localStorage.getItem('pt_program_log') || '[]');
+  const id  = Date.now().toString();
+  log.unshift({ id, client, prog, date, saved: date, data: JSON.stringify(program) });
+  localStorage.setItem('pt_program_log', JSON.stringify(log));
+  toast('Saved to program log: ' + client + ' — ' + prog);
+  renderProgramLog();
+}
+
+function renderProgramLog(){
+  const log = JSON.parse(localStorage.getItem('pt_program_log') || '[]');
+  const container = document.getElementById('programLog');
+  const empty = document.getElementById('logEmpty');
+  if(!log.length){ container.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  container.innerHTML = log.map(entry => `
+    <div class="log-card">
+      <div class="log-info">
+        <div class="log-name">${entry.client} — ${entry.prog}</div>
+        <div class="log-meta">Saved ${entry.saved}</div>
+      </div>
+      <div class="log-actions">
+        <button class="btn" onclick="loadFromLog('${entry.id}')">Load</button>
+        <button class="btn" style="color:var(--red)" onclick="deleteFromLog('${entry.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadFromLog(id){
+  const log = JSON.parse(localStorage.getItem('pt_program_log') || '[]');
+  const entry = log.find(e => e.id === id);
+  if(!entry){ toast('Program not found.'); return; }
+  program = JSON.parse(entry.data);
+  if(program.meta){
+    document.getElementById('clientName').value = program.meta.client||'';
+    document.getElementById('progName').value   = program.meta.prog||'';
+    document.getElementById('startDate').value  = program.meta.date||'';
+    document.getElementById('coachNotes').value = program.meta.notes||'';
+    if(program.meta.length)  document.getElementById('progLength').value  = program.meta.length;
+    if(program.meta.numDays) document.getElementById('numDays').value     = program.meta.numDays;
+  }
+  if(program.structure?.length){
+    currentStructure = program.structure;
+    document.getElementById('numDays').value = currentStructure.length;
+    renderDayConfigs();
+  }
+  program.structure.forEach((_,i) => openDays[i] = i===0);
+  currentWeek = 1;
+  renderWeekBar();
+  renderDays();
+  showView('builder', document.querySelector('.topbar-nav button'));
+  toast('Loaded: ' + entry.client + ' — ' + entry.prog);
+}
+
+function deleteFromLog(id){
+  if(!confirm('Delete this program from the log? This cannot be undone.')) return;
+  const log = JSON.parse(localStorage.getItem('pt_program_log') || '[]');
+  const updated = log.filter(e => e.id !== id);
+  localStorage.setItem('pt_program_log', JSON.stringify(updated));
+  renderProgramLog();
+  toast('Program deleted from log.');
+}
+
 renderDayConfigs();
 renderWeekBar();
+renderProgramLog();
 openDays={0:true,1:false,2:false,3:false};
 renderDays();
 </script>
