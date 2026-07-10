@@ -562,6 +562,7 @@ function updateDayConfigs(){
   const n=parseInt(document.getElementById('numDays').value);
   while(currentStructure.length<n) currentStructure.push({name:`Day ${currentStructure.length+1}`,sessions:[{time:'AM',type:'Weights'}]});
   currentStructure=currentStructure.slice(0,n);
+  program.structure=JSON.parse(JSON.stringify(currentStructure));
   renderDayConfigs();
 }
 
@@ -585,8 +586,8 @@ function renderSessionConfig(di,si,session){
   const tyOpts=SESSION_TYPES.map(t=>`<option ${t===session.type?'selected':''}>${t}</option>`).join('');
   return `<div class="session-config">
     <span class="session-label">Session ${si+1}</span>
-    <select onchange="currentStructure[${di}].sessions[${si}].time=this.value">${tOpts}</select>
-    <select onchange="currentStructure[${di}].sessions[${si}].type=this.value">${tyOpts}</select>
+    <select onchange="currentStructure[${di}].sessions[${si}].time=this.value;syncStructure()">${tOpts}</select>
+    <select onchange="currentStructure[${di}].sessions[${si}].type=this.value;syncStructure()">${tyOpts}</select>
     ${si>0?`<button class="remove-session-btn" onclick="removeSession(${di},${si})">x</button>`:''}
   </div>`;
 }
@@ -594,8 +595,12 @@ function renderSessionConfig(di,si,session){
 function addSession(di){currentStructure[di].sessions.push({time:'PM',type:'Weights'});renderDayConfigs()}
 function removeSession(di,si){currentStructure[di].sessions.splice(si,1);renderDayConfigs()}
 
+function syncStructure(){
+  program.structure=JSON.parse(JSON.stringify(currentStructure));
+}
 function applyStructure(){
-  program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,parseInt(document.getElementById('numDays').value))));
+  const n=parseInt(document.getElementById('numDays').value);
+  program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,n)));
   program.weeks={};
   openDays={};
   program.structure.forEach((_,i)=>openDays[i]=i===0);
@@ -642,7 +647,9 @@ function getWeek(w){
 }
 
 function renderDays(){
-  const struct=program.structure.length?program.structure:currentStructure;
+  // Always keep program.structure in sync so getWeek and refreshSection work correctly
+  if(!program.structure.length) program.structure=JSON.parse(JSON.stringify(currentStructure));
+  const struct=program.structure;
   const data=getWeek(currentWeek);
   document.getElementById('daysGrid').innerHTML=struct.map((day,di)=>`
     <div class="day-block">
