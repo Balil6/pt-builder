@@ -738,16 +738,36 @@ function renderCardioRow(di,si,secKey,idx,slot){
   CARDIO_TYPES.forEach(function(t){
     typeOpts+='<option'+(t===(slot.ctype||'')?' selected':'')+'>'+t+'</option>';
   });
-  var fn='onCardioField('+di+','+si+',"'+secKey+'",'+idx+',';
-  return '<div class="cardio-row">'+
-    '<select class="activity-sel" onchange="'+fn+'"activity",this.value)">'+actOpts+'</select>'+
-    '<select style="background:#fef3e2;border-color:#d4a84b" onchange="'+fn+'"ctype",this.value)">'+typeOpts+'</select>'+
-    '<input value="'+(slot.duration||'').replace(/"/g,'&quot;')+'" placeholder="30 min / 5km" oninput="'+fn+'"duration",this.value)">'+
-    '<input value="'+(slot.workrest||'').replace(/"/g,'&quot;')+'" placeholder="30s / 90s" oninput="'+fn+'"workrest",this.value)">'+
-    '<input value="'+(slot.intensity||'').replace(/"/g,'&quot;')+'" placeholder="RPE / Zone 2" oninput="'+fn+'"intensity",this.value)">'+
-    '<input value="'+(slot.notes||'').replace(/"/g,'&quot;')+'" placeholder="Notes..." oninput="'+fn+'"notes",this.value)">'+
-    '<button class="rm-btn" onclick="removeRow('+di+','+si+',"'+secKey+'",'+idx+')">x</button>'+
+  // Use data attributes to avoid quote conflicts in inline handlers
+  var attrs='data-di="'+di+'" data-si="'+si+'" data-sec="'+secKey+'" data-idx="'+idx+'"';
+  return '<div class="cardio-row" '+attrs+'>'+
+    '<select class="activity-sel cardio-field" data-field="activity" '+attrs+' onchange="onCardioFieldEvt(this)">'+actOpts+'</select>'+
+    '<select style="background:#fef3e2;border-color:#d4a84b" class="cardio-field" data-field="ctype" '+attrs+' onchange="onCardioFieldEvt(this)">'+typeOpts+'</select>'+
+    '<input class="cardio-field" data-field="duration" '+attrs+' value="'+(slot.duration||'').replace(/"/g,'&quot;')+'" placeholder="30 min / 5km" oninput="onCardioFieldEvt(this)">'+
+    '<input class="cardio-field" data-field="workrest" '+attrs+' value="'+(slot.workrest||'').replace(/"/g,'&quot;')+'" placeholder="30s / 90s" oninput="onCardioFieldEvt(this)">'+
+    '<input class="cardio-field" data-field="intensity" '+attrs+' value="'+(slot.intensity||'').replace(/"/g,'&quot;')+'" placeholder="RPE / Zone 2" oninput="onCardioFieldEvt(this)">'+
+    '<input class="cardio-field" data-field="notes" '+attrs+' value="'+(slot.notes||'').replace(/"/g,'&quot;')+'" placeholder="Notes..." oninput="onCardioFieldEvt(this)">'+
+    '<div class="move-btns"><button class="move-btn" data-di="'+di+'" data-si="'+si+'" data-sec="'+secKey+'" data-idx="'+idx+'" data-dir="-1" onclick="moveRowEvt(this)" title="Up">&#9650;</button><button class="move-btn" data-di="'+di+'" data-si="'+si+'" data-sec="'+secKey+'" data-idx="'+idx+'" data-dir="1" onclick="moveRowEvt(this)" title="Down">&#9660;</button></div>'+
+    '<button class="rm-btn" data-di="'+di+'" data-si="'+si+'" data-sec="'+secKey+'" data-idx="'+idx+'" onclick="removeRowEvt(this)">x</button>'+
     '</div>';
+}
+
+function onCardioFieldEvt(el){
+  var di=parseInt(el.dataset.di),si=parseInt(el.dataset.si),sec=el.dataset.sec,idx=parseInt(el.dataset.idx),field=el.dataset.field;
+  var d=getWeek(currentWeek);
+  if(d[di]&&d[di][si]&&d[di][si].sections&&d[di][si].sections[sec]&&d[di][si].sections[sec][idx]){
+    d[di][si].sections[sec][idx][field]=el.value;
+    if(!program.weekEdited)program.weekEdited={};
+    program.weekEdited[currentWeek]=true;
+  }
+}
+
+function removeRowEvt(el){
+  removeRow(parseInt(el.dataset.di),parseInt(el.dataset.si),el.dataset.sec,parseInt(el.dataset.idx));
+}
+
+function moveRowEvt(el){
+  moveRow(parseInt(el.dataset.di),parseInt(el.dataset.si),el.dataset.sec,parseInt(el.dataset.idx),parseInt(el.dataset.dir));
 }
 
 function onCardioField(di,si,secKey,idx,field,val){
