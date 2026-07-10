@@ -834,30 +834,43 @@ function saveProgram(){
     numDays:document.getElementById('numDays').value,
   };
   program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,parseInt(program.meta.numDays))));
-  localStorage.setItem('pt_builder_v2',JSON.stringify(program));
-  toast('Program saved.');
+  // Save full program including all weeks data
+  const saveData = {
+    meta: program.meta,
+    structure: program.structure,
+    weeks: program.weeks,
+    weekEdited: program.weekEdited||{}
+  };
+  localStorage.setItem('pt_builder_v2',JSON.stringify(saveData));
+  toast('Program saved — all weeks included.');
 }
 
 function loadProgram(){
   const s=localStorage.getItem('pt_builder_v2');
   if(!s){toast('No saved program found.');return}
-  program=JSON.parse(s);
-  if(program.meta){
-    document.getElementById('clientName').value=program.meta.client||'';
-    document.getElementById('progName').value=program.meta.prog||'';
-    document.getElementById('startDate').value=program.meta.date||'';
-    document.getElementById('coachNotes').value=program.meta.notes||'';
-    if(program.meta.length)document.getElementById('progLength').value=program.meta.length;
-    if(program.meta.numDays)document.getElementById('numDays').value=program.meta.numDays;
+  const saved=JSON.parse(s);
+  if(saved.meta){
+    document.getElementById('clientName').value=saved.meta.client||'';
+    document.getElementById('progName').value=saved.meta.prog||'';
+    document.getElementById('startDate').value=saved.meta.date||'';
+    document.getElementById('coachNotes').value=saved.meta.notes||'';
+    if(saved.meta.length)document.getElementById('progLength').value=saved.meta.length;
+    if(saved.meta.numDays)document.getElementById('numDays').value=saved.meta.numDays;
   }
-  if(program.structure?.length){
-    currentStructure=program.structure;
+  if(saved.structure?.length){
+    currentStructure=saved.structure;
+    program.structure=saved.structure;
     document.getElementById('numDays').value=currentStructure.length;
     renderDayConfigs();
   }
+  // Restore all weeks data
+  program.weeks=saved.weeks||{};
+  program.weekEdited=saved.weekEdited||{};
+  program.meta=saved.meta||{};
   program.structure.forEach((_,i)=>openDays[i]=i===0);
+  currentWeek=1;
   renderWeekBar();renderDays();
-  toast('Program loaded.');
+  toast('Program loaded — all weeks restored.');
 }
 
 function exportFull(){
@@ -865,31 +878,92 @@ function exportFull(){
   const prog=document.getElementById('progName').value||'Program';
   const len=parseInt(document.getElementById('progLength').value);
   const struct=program.structure.length?program.structure:currentStructure;
-  let txt=`${client.toUpperCase()}\n${prog.toUpperCase()}\n${'='.repeat(40)}\n\n`;
+
+  let html=`<html><head><meta charset="UTF-8"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;color:#0a0a0a;padding:32px;font-size:12px}
+    .cover{page-break-after:always;display:flex;flex-direction:column;justify-content:center;min-height:90vh;padding:40px 0}
+    .cover-title{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;margin-bottom:8px}
+    .cover-sub{font-size:16px;color:#666;margin-bottom:32px}
+    .cover-meta{display:flex;gap:0;border:1px solid #e2e2de;border-radius:8px;overflow:hidden;max-width:400px}
+    .mi{flex:1;padding:12px 16px;border-right:1px solid #e2e2de}.mi:last-child{border-right:none}
+    .ml{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9a9a92;margin-bottom:2px}
+    .mv{font-size:13px;font-weight:500}
+    .week-hdr{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;margin:32px 0 16px;padding-bottom:8px;border-bottom:2px solid #0a0a0a;page-break-before:always}
+    .week-hdr:first-of-type{page-break-before:avoid}
+    .day-hdr{padding:8px 12px;background:#1a1a1a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;margin-top:16px;margin-bottom:6px;border-radius:4px}
+    .session-hdr{display:flex;align-items:center;gap:8px;margin:10px 0 5px}
+    .tb{font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:0.06em}
+    .am{background:#e3f2fd;color:#0f3460}.pm{background:#ede7f6;color:#3a1a6a}
+    .sl{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:#e8eaf6;color:#1a1a2e;margin-bottom:4px;display:inline-block}
+    .sl-cardio{background:#f3e5f5;color:#4a1a6a}
+    table{width:100%;border-collapse:collapse;margin-bottom:8px}
+    th{background:#f0f0ee;padding:5px 8px;text-align:left;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b6b62}
+    td{padding:7px 8px;border-bottom:1px solid #f0f0ee;font-size:11px}
+    tr:nth-child(even) td{background:#fafaf8}
+    .en{font-weight:500}.cue{color:#6b6b62;font-style:italic}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid #e2e2de;display:flex;justify-content:space-between;font-size:10px;color:#9a9a92}
+  </style></head><body>`;
+
+  // Cover page
+  const startDate=document.getElementById('startDate').value;
+  html+=`<div class="cover">
+    <div class="cover-title">${client}</div>
+    <div class="cover-sub">${prog}</div>
+    <div class="cover-meta">
+      <div class="mi"><div class="ml">Weeks</div><div class="mv">${len}</div></div>
+      <div class="mi"><div class="ml">Days</div><div class="mv">${struct.length}</div></div>
+      <div class="mi"><div class="ml">Start</div><div class="mv">${startDate||'—'}</div></div>
+      <div class="mi"><div class="ml">Coach</div><div class="mv">Will</div></div>
+    </div>
+  </div>`;
+
+  // Each week
   for(let w=1;w<=len;w++){
     if(!program.weeks[w])continue;
     const data=program.weeks[w];
-    let wt=`WEEK ${w}\n${'─'.repeat(36)}\n`;
+    html+=`<div class="week-hdr">Week ${w}</div>`;
     struct.forEach((day,di)=>{
-      let dayT=`\nDay ${di+1} — ${day.name}\n`;let hasEx=false;
+      let dayContent='';
       day.sessions.forEach((s,si)=>{
         const sd=data[di]?.[si];if(!sd)return;
-        const tl=s.time!=='Single'?` (${s.time})`:'';
+        const tl=s.time!=='Single'?s.time:'';
+        const isCardio=['Cardio','Run','Conditioning'].includes(s.type);
+        let sessContent='';
         Object.entries(sd.sections).forEach(([sk,slots])=>{
-          const filled=slots.filter(r=>r.ex);if(!filled.length)return;
-          hasEx=true;
-          dayT+=`\n  ${sk==='warmup'?'Warm Up':s.type}${tl}\n`;
-          filled.forEach((r,i)=>{
-            const sr=r.sets&&r.reps?`${r.sets} x ${r.reps}`:r.sets||r.reps||'';
-            dayT+=`    ${i+1}. ${r.ex}${sr?' — '+sr:''}${r.notes?' ('+r.notes+')':''}\n`;
-          });
+          const isCardioSec=isCardio&&sk!=='warmup';
+          const filled=isCardioSec?slots.filter(r=>r.activity):slots.filter(r=>r.ex);
+          if(!filled.length)return;
+          const sl=sk==='warmup'?'Warm Up':s.type;
+          if(isCardioSec){
+            sessContent+=`<div class="sl sl-cardio">${sl}</div>
+            <table><thead><tr><th style="width:20%">Activity</th><th style="width:15%">Type</th><th style="width:15%">Duration</th><th style="width:15%">Work/Rest</th><th style="width:15%">Intensity</th><th>Notes</th></tr></thead><tbody>`;
+            filled.forEach(r=>{
+              sessContent+=`<tr><td><span class="en">${r.activity||'—'}</span></td><td>${r.ctype||'—'}</td><td>${r.duration||'—'}</td><td>${r.workrest||'—'}</td><td>${r.intensity||'—'}</td><td class="cue">${r.notes||''}</td></tr>`;
+            });
+          } else {
+            sessContent+=`<div class="sl">${sl}</div>
+            <table><thead><tr><th style="width:35%">Exercise</th><th style="width:8%">Sets</th><th style="width:10%">Reps</th><th>Cue</th></tr></thead><tbody>`;
+            filled.forEach(r=>{
+              sessContent+=`<tr><td><span class="en">${r.ex}</span></td><td>${r.sets||'—'}</td><td>${r.reps||'—'}</td><td class="cue">${r.notes||''}</td></tr>`;
+            });
+          }
+          sessContent+='</tbody></table>';
         });
+        if(sessContent){
+          dayContent+=`<div class="session-hdr">${tl?`<span class="tb ${s.time==='AM'?'am':'pm'}">${tl}</span>`:''}<span style="font-size:12px;font-weight:500">${s.type}</span></div>${sessContent}`;
+        }
       });
-      if(hasEx)wt+=dayT;
+      if(dayContent)html+=`<div class="day-hdr">Day ${di+1} — ${day.name}</div>${dayContent}`;
     });
-    if(wt.trim())txt+=wt+'\n';
   }
-  download(txt,`${client.replace(/\s+/g,'_')}_FullProgram.txt`);
+
+  html+=`<footer><span>Programmed by Will — Pro.am</span><span>${prog} · ${len} Weeks</span></footer></body></html>`;
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.onload=()=>win.print();
 }
 
 function exportWeekPDF(){
