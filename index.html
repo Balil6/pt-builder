@@ -239,7 +239,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
     <button class="btn primary" onclick="exportWeekPDF()">Export week PDF</button>
     <button class="btn" onclick="exportFull()">Export full program</button>
     <button class="btn" onclick="copyWeekToAll()">Cascade weeks from Week 1</button>
-    <button class="btn" onclick="saveProgram()">Save</button>
+    <button class="btn primary" onclick="saveProgram()">Save to log</button>
     <button class="btn" onclick="loadProgram()">Load</button>
   </div>
   <div id="toast" class="toast"></div>
@@ -262,7 +262,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600}
 <div id="programs" class="view">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
     <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600">Saved Programs</h2>
-    <button class="btn primary" onclick="saveToLog()">Save current program to log</button>
+    <button class="btn primary" onclick="saveProgram()">Save program to log</button>
   </div>
   <div id="programLog" style="display:flex;flex-direction:column;gap:8px"></div>
   <div id="logEmpty" style="padding:40px;text-align:center;color:var(--grey-400);font-size:13px;border:1px dashed var(--grey-200);border-radius:var(--radius-lg);display:none">No saved programs yet. Build a program and save it to the log.</div>
@@ -852,24 +852,35 @@ function copyWeekToAll(){
 }
 
 function saveProgram(){
+  const client = document.getElementById('clientName').value || 'Unnamed';
+  const prog   = document.getElementById('progName').value || 'Unnamed program';
+  const saved  = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
   program.meta={
-    client:document.getElementById('clientName').value,
-    prog:document.getElementById('progName').value,
-    date:document.getElementById('startDate').value,
-    notes:document.getElementById('coachNotes').value,
-    length:document.getElementById('progLength').value,
+    client,prog,
+    date:   document.getElementById('startDate').value,
+    notes:  document.getElementById('coachNotes').value,
+    length: document.getElementById('progLength').value,
     numDays:document.getElementById('numDays').value,
   };
   program.structure=JSON.parse(JSON.stringify(currentStructure.slice(0,parseInt(program.meta.numDays))));
-  // Save full program including all weeks data
-  const saveData = {
-    meta: program.meta,
-    structure: program.structure,
-    weeks: program.weeks,
-    weekEdited: program.weekEdited||{}
-  };
+  const saveData={meta:program.meta,structure:program.structure,weeks:program.weeks,weekEdited:program.weekEdited||{}};
+
+  // Save to quick-load slot
   localStorage.setItem('pt_builder_v2',JSON.stringify(saveData));
-  toast('Program saved — all weeks included.');
+
+  // Save to program log — update existing entry if same client+prog, otherwise add new
+  const log=JSON.parse(localStorage.getItem('pt_program_log')||'[]');
+  const existingIdx=log.findIndex(e=>e.client===client&&e.prog===prog);
+  const entry={id:existingIdx>=0?log[existingIdx].id:Date.now().toString(),client,prog,saved,data:JSON.stringify(saveData)};
+  if(existingIdx>=0){
+    log[existingIdx]=entry;
+    toast('Program updated in log: '+client+' — '+prog);
+  } else {
+    log.unshift(entry);
+    toast('Program saved to log: '+client+' — '+prog);
+  }
+  localStorage.setItem('pt_program_log',JSON.stringify(log));
+  renderProgramLog();
 }
 
 function loadProgram(){
